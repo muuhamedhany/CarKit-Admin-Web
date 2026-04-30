@@ -1,0 +1,18 @@
+
+> carkit-admin-web@0.0.0 build
+> vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 2 modules transformed.
+Γ£ù Build failed in 95ms
+error during build:
+[vite]: Rollup failed to resolve import "react-content" from "C:/Users/computer Store/Desktop/CarKit/CarKit-Admin-Web/src/main.jsx".
+This is most likely unintended because it can break your application at runtime.
+If you do want to externalize this module explicitly add it to
+`build.rollupOptions.external`
+    at viteLog (file:///C:/Users/computer%20Store/Desktop/CarKit/CarKit-Admin-Web/node_modules/vite/dist/node/chunks/config.js:33635:57)
+    at file:///C:/Users/computer%20Store/Desktop/CarKit/CarKit-Admin-Web/node_modules/vite/dist/node/chunks/config.js:33669:73
+    at onwarn (file:///C:/Users/computer%20Store/Desktop/CarKit/CarKit-Admin-Web/node_modules/@vitejs/plugin-react/dist/index.js:76:7)
+    at file:///C:/Users/computer%20Store/Desktop/CarKit/CarKit-Admin-Web/node_modules/vite/dist/node/chunks/config.js:33669:28
+    at onRollupLog (file:///C:/Users/computer%20Store/Desktop/CarKit/CarKit-Admin-Web/node_modules/vite/dist/node/chunks/config.js:33664:63)

@@ -1,0 +1,49 @@
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/Layout';
+import Login from './pages/Login';
+import Vendors from './pages/Vendors';
+import VendorDetail from './pages/VendorDetail';
+import ServiceProviders from './pages/ServiceProviders';
+import ProviderDetail from './pages/ProviderDetail';
+import Users from './pages/Users';
+import Dashboard from './pages/Dashboard';
+import PendingProducts from './pages/PendingProducts';
+import ProductDetail from './pages/ProductDetail';
+import PendingServices from './pages/PendingServices';
+import ServiceDetail from './pages/ServiceDetail';
+import './pages/Login.css';
+
+function App() {
+  return (
+    <AuthProvider>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="users" element={<Users />} />
+          <Route path="pending-products" element={<PendingProducts />} />
+          <Route path="pending-products/:id" element={<ProductDetail />} />
+          <Route path="pending-services" element={<PendingServices />} />
+          <Route path="pending-services/:id" element={<ServiceDetail />} />
+          <Route path="vendors" element={<Vendors />} />
+          <Route path="vendors/:id" element={<VendorDetail />} />
+          <Route path="service-providers" element={<ServiceProviders />} />
+          <Route path="service-providers/:id" element={<ProviderDetail />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
+  );
+}
+
+export default App;
