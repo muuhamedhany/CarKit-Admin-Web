@@ -27,10 +27,10 @@ const Layout = () => {
   ];
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#0F0F1A', fontFamily: "'Poppins', sans-serif" }}>
+    <div className="min-h-screen flex overflow-hidden" style={{ background: '#0F0F1A', fontFamily: "'Poppins', sans-serif" }}>
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 shadow-xl transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto  flex flex-col ${
+        className={`fixed inset-y-0 left-0 z-50 h-screen w-64 shadow-xl transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto flex flex-col overflow-hidden ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         style={{ background: '#0A0A14', borderRight: '1px solid #2A2A3A' }}
@@ -47,8 +47,8 @@ const Layout = () => {
         </div>
 
         {/* Navigation */}
-        <div className="flex flex-1 flex-col overflow-y-auto">
-          <nav className="flex-1 space-y-1.5 px-3 py-6">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <nav className="flex-1 min-h-0 space-y-1.5 overflow-y-auto px-3 py-6">
             {navigation.map((item) => {
               const Icon = item.icon;
               return (
@@ -79,7 +79,7 @@ const Layout = () => {
           </nav>
 
           {/* User info + Logout */}
-          <div className="px-3 py-4" style={{ borderTop: '1px solid #2A2A3A' }}>
+          <div className="shrink-0 px-3 py-4" style={{ borderTop: '1px solid #2A2A3A' }}>
             {admin && (
               <div className="px-4 py-2 mb-2">
                 <p className="text-xs font-medium truncate" style={{ color: '#FFFFFF' }}>{admin.name}</p>
