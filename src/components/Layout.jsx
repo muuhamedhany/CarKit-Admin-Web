@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Store, Wrench, Menu, LogOut, PackageCheck, ShoppingBag, CalendarDays, Megaphone } from 'lucide-react';
+import { LayoutDashboard, Users, Store, Wrench, Menu, LogOut, PackageCheck, ShoppingBag, CalendarDays } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../assets/carkit-logo.png';
@@ -20,7 +20,6 @@ const Layout = () => {
     { name: 'Users', href: '/users', icon: Users },
     { name: 'Pending Products', href: '/pending-products', icon: PackageCheck },
     { name: 'Pending Services', href: '/pending-services', icon: Wrench },
-    { name: 'Pending Ads', href: '/pending-ads', icon: Megaphone },
     { name: 'Orders', href: '/orders', icon: ShoppingBag },
     { name: 'Bookings', href: '/bookings', icon: CalendarDays },
     { name: 'Vendors', href: '/vendors', icon: Store },
