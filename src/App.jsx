@@ -14,6 +14,7 @@ import PendingProducts from './pages/PendingProducts';
 import ProductDetail from './pages/ProductDetail';
 import PendingServices from './pages/PendingServices';
 import ServiceDetail from './pages/ServiceDetail';
+import PendingAds from './pages/PendingAds';
 import Orders from './pages/Orders';
 import OrderDetail from './pages/OrderDetail';
 import Bookings from './pages/Bookings';
@@ -40,6 +41,7 @@ function App() {
           <Route path="pending-products/:id" element={<ProductDetail />} />
           <Route path="pending-services" element={<PendingServices />} />
           <Route path="pending-services/:id" element={<ServiceDetail />} />
+          <Route path="pending-ads" element={<PendingAds />} />
           <Route path="orders" element={<Orders />} />
           <Route path="orders/:id" element={<OrderDetail />} />
           <Route path="bookings" element={<Bookings />} />
