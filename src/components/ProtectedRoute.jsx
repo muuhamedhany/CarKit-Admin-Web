@@ -18,7 +18,8 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   }
 
   if (requiredRole && admin?.role !== requiredRole) {
-    return <Navigate to="/dashboard" replace />;
+    const defaultPage = admin?.role === 'superadmin' ? '/db-explorer' : '/dashboard';
+    return <Navigate to={defaultPage} replace />;
   }
 
   return children;

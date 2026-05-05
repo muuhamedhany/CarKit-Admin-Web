@@ -23,6 +23,11 @@ import BookingDetail from './pages/BookingDetail';
 import DatabaseExplorer from './pages/DatabaseExplorer';
 import './pages/Login.css';
 
+const IndexRedirect = () => {
+  const { admin } = useAuth();
+  return <Navigate to={admin?.role === 'superadmin' ? "/db-explorer" : "/dashboard"} replace />;
+};
+
 function App() {
   return (
     <AuthProvider>
@@ -36,28 +41,28 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
+          <Route index element={<IndexRedirect />} />
           
-          {/* Restricted to Super Admin */}
+          {/* Admin only routes */}
+          <Route path="dashboard" element={<ProtectedRoute requiredRole="admin"><Dashboard /></ProtectedRoute>} />
+          <Route path="pending-products" element={<ProtectedRoute requiredRole="admin"><PendingProducts /></ProtectedRoute>} />
+          <Route path="pending-products/:id" element={<ProtectedRoute requiredRole="admin"><ProductDetail /></ProtectedRoute>} />
+          <Route path="pending-services" element={<ProtectedRoute requiredRole="admin"><PendingServices /></ProtectedRoute>} />
+          <Route path="pending-services/:id" element={<ProtectedRoute requiredRole="admin"><ServiceDetail /></ProtectedRoute>} />
+          <Route path="pending-ads" element={<ProtectedRoute requiredRole="admin"><PendingAds /></ProtectedRoute>} />
+          <Route path="pending-ads/:id" element={<ProtectedRoute requiredRole="admin"><AdDetail /></ProtectedRoute>} />
+          <Route path="vendors" element={<ProtectedRoute requiredRole="admin"><Vendors /></ProtectedRoute>} />
+          <Route path="vendors/:id" element={<ProtectedRoute requiredRole="admin"><VendorDetail /></ProtectedRoute>} />
+          <Route path="service-providers" element={<ProtectedRoute requiredRole="admin"><ServiceProviders /></ProtectedRoute>} />
+          <Route path="service-providers/:id" element={<ProtectedRoute requiredRole="admin"><ProviderDetail /></ProtectedRoute>} />
+
+          {/* Super Admin only routes */}
           <Route path="users" element={<ProtectedRoute requiredRole="superadmin"><Users /></ProtectedRoute>} />
           <Route path="orders" element={<ProtectedRoute requiredRole="superadmin"><Orders /></ProtectedRoute>} />
           <Route path="orders/:id" element={<ProtectedRoute requiredRole="superadmin"><OrderDetail /></ProtectedRoute>} />
           <Route path="bookings" element={<ProtectedRoute requiredRole="superadmin"><Bookings /></ProtectedRoute>} />
           <Route path="bookings/:id" element={<ProtectedRoute requiredRole="superadmin"><BookingDetail /></ProtectedRoute>} />
           <Route path="db-explorer" element={<ProtectedRoute requiredRole="superadmin"><DatabaseExplorer /></ProtectedRoute>} />
-
-          {/* Accessible to both */}
-          <Route path="pending-products" element={<PendingProducts />} />
-          <Route path="pending-products/:id" element={<ProductDetail />} />
-          <Route path="pending-services" element={<PendingServices />} />
-          <Route path="pending-services/:id" element={<ServiceDetail />} />
-          <Route path="pending-ads" element={<PendingAds />} />
-          <Route path="pending-ads/:id" element={<AdDetail />} />
-          <Route path="vendors" element={<Vendors />} />
-          <Route path="vendors/:id" element={<VendorDetail />} />
-          <Route path="service-providers" element={<ServiceProviders />} />
-          <Route path="service-providers/:id" element={<ProviderDetail />} />
         </Route>
       </Routes>
     </AuthProvider>

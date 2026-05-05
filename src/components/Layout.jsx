@@ -17,23 +17,18 @@ const Layout = () => {
     navigate('/login', { replace: true });
   };
 
-  const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    // Only Super Admin sees Users
-    ...(isSuperAdmin ? [{ name: 'Users', href: '/users', icon: Users }] : []),
-    { name: 'Pending Products', href: '/pending-products', icon: PackageCheck },
-    { name: 'Pending Services', href: '/pending-services', icon: Wrench },
-    { name: 'Pending Ads', href: '/pending-ads', icon: Megaphone },
-    // Only Super Admin sees Orders and Bookings
-    ...(isSuperAdmin ? [
-      { name: 'Orders', href: '/orders', icon: ShoppingBag },
-      { name: 'Bookings', href: '/bookings', icon: CalendarDays }
-    ] : []),
-    { name: 'Vendors', href: '/vendors', icon: Store },
-    { name: 'Service Providers', href: '/service-providers', icon: Wrench },
-    // New Super Admin tool
-    ...(isSuperAdmin ? [{ name: 'DB Explorer', href: '/db-explorer', icon: LayoutDashboard }] : []),
-  ];
+  const navigation = isSuperAdmin 
+    ? [
+        { name: 'DB Explorer', href: '/db-explorer', icon: LayoutDashboard }
+      ]
+    : [
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'Pending Products', href: '/pending-products', icon: PackageCheck },
+        { name: 'Pending Services', href: '/pending-services', icon: Wrench },
+        { name: 'Pending Ads', href: '/pending-ads', icon: Megaphone },
+        { name: 'Vendors', href: '/vendors', icon: Store },
+        { name: 'Service Providers', href: '/service-providers', icon: Wrench },
+      ];
 
   return (
     <div className="min-h-screen flex overflow-hidden" style={{ background: '#0F0F1A', fontFamily: "'Poppins', sans-serif" }}>
