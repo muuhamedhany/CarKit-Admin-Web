@@ -14,7 +14,7 @@ const PendingAds = () => {
   const fetchPendingAds = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/api/ads/all`, {
+      const response = await axios.get(`${API_URL}/api/promotions/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       // Filter only pending ads
@@ -35,7 +35,7 @@ const PendingAds = () => {
     try {
       setApproving((prev) => ({ ...prev, [adId]: newStatus }));
       await axios.patch(
-        `${API_URL}/api/ads/${adId}/status`,
+        `${API_URL}/api/promotions/${adId}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
