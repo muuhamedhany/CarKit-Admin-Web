@@ -10,6 +10,8 @@ const Layout = () => {
   const { admin, logout } = useAuth();
   const navigate = useNavigate();
 
+  const isSuperAdmin = admin?.role === 'superadmin';
+
   const handleLogout = () => {
     logout();
     navigate('/login', { replace: true });
@@ -17,14 +19,20 @@ const Layout = () => {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Users', href: '/users', icon: Users },
+    // Only Super Admin sees Users
+    ...(isSuperAdmin ? [{ name: 'Users', href: '/users', icon: Users }] : []),
     { name: 'Pending Products', href: '/pending-products', icon: PackageCheck },
     { name: 'Pending Services', href: '/pending-services', icon: Wrench },
     { name: 'Pending Ads', href: '/pending-ads', icon: Megaphone },
-    { name: 'Orders', href: '/orders', icon: ShoppingBag },
-    { name: 'Bookings', href: '/bookings', icon: CalendarDays },
+    // Only Super Admin sees Orders and Bookings
+    ...(isSuperAdmin ? [
+      { name: 'Orders', href: '/orders', icon: ShoppingBag },
+      { name: 'Bookings', href: '/bookings', icon: CalendarDays }
+    ] : []),
     { name: 'Vendors', href: '/vendors', icon: Store },
     { name: 'Service Providers', href: '/service-providers', icon: Wrench },
+    // New Super Admin tool
+    ...(isSuperAdmin ? [{ name: 'DB Explorer', href: '/db-explorer', icon: LayoutDashboard }] : []),
   ];
 
   return (

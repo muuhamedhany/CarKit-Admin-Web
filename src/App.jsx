@@ -20,6 +20,7 @@ import Orders from './pages/Orders';
 import OrderDetail from './pages/OrderDetail';
 import Bookings from './pages/Bookings';
 import BookingDetail from './pages/BookingDetail';
+import DatabaseExplorer from './pages/DatabaseExplorer';
 import './pages/Login.css';
 
 function App() {
@@ -37,17 +38,22 @@ function App() {
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="users" element={<Users />} />
+          
+          {/* Restricted to Super Admin */}
+          <Route path="users" element={<ProtectedRoute requiredRole="superadmin"><Users /></ProtectedRoute>} />
+          <Route path="orders" element={<ProtectedRoute requiredRole="superadmin"><Orders /></ProtectedRoute>} />
+          <Route path="orders/:id" element={<ProtectedRoute requiredRole="superadmin"><OrderDetail /></ProtectedRoute>} />
+          <Route path="bookings" element={<ProtectedRoute requiredRole="superadmin"><Bookings /></ProtectedRoute>} />
+          <Route path="bookings/:id" element={<ProtectedRoute requiredRole="superadmin"><BookingDetail /></ProtectedRoute>} />
+          <Route path="db-explorer" element={<ProtectedRoute requiredRole="superadmin"><DatabaseExplorer /></ProtectedRoute>} />
+
+          {/* Accessible to both */}
           <Route path="pending-products" element={<PendingProducts />} />
           <Route path="pending-products/:id" element={<ProductDetail />} />
           <Route path="pending-services" element={<PendingServices />} />
           <Route path="pending-services/:id" element={<ServiceDetail />} />
           <Route path="pending-ads" element={<PendingAds />} />
           <Route path="pending-ads/:id" element={<AdDetail />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="orders/:id" element={<OrderDetail />} />
-          <Route path="bookings" element={<Bookings />} />
-          <Route path="bookings/:id" element={<BookingDetail />} />
           <Route path="vendors" element={<Vendors />} />
           <Route path="vendors/:id" element={<VendorDetail />} />
           <Route path="service-providers" element={<ServiceProviders />} />
