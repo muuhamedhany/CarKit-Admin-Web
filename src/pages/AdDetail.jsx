@@ -16,11 +16,8 @@ const AdDetail = () => {
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
 
-  // For resolved names
-  const [targetProducts, setTargetProducts] = useState([]);
-  const [targetServices, setTargetServices] = useState([]);
-  const [targetCategories, setTargetCategories] = useState([]);
-
+  // No longer using targeting state
+  
   useEffect(() => {
     fetchAdDetails();
   }, [id]);
@@ -32,63 +29,12 @@ const AdDetail = () => {
       const response = await axios.get(`${API_URL}/api/promotions/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const adData = response.data.data;
-      setAd(adData);
-
-      // Fetch resolved names for targets if they exist
-      if (adData.target_product_ids?.length > 0) {
-        fetchProductNames(adData.target_product_ids);
-      }
-      if (adData.target_service_ids?.length > 0) {
-        fetchServiceNames(adData.target_service_ids);
-      }
-      if (adData.target_category_ids?.length > 0) {
-        fetchCategoryNames(adData.target_category_ids, adData.vendor_id ? 'product' : 'service');
-      }
-
+      setAd(response.data.data);
     } catch (err) {
       console.error('Error fetching ad details:', err);
       setError('Failed to load ad details.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchProductNames = async (ids) => {
-    try {
-      const response = await axios.get(`${API_URL}/api/products?product_ids=${ids.join(',')}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setTargetProducts(response.data.data || []);
-    } catch (err) {
-      console.error('Error fetching target products:', err);
-    }
-  };
-
-  const fetchServiceNames = async (ids) => {
-    try {
-      const response = await axios.get(`${API_URL}/api/services?service_ids=${ids.join(',')}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setTargetServices(response.data.data || []);
-    } catch (err) {
-      console.error('Error fetching target services:', err);
-    }
-  };
-
-  const fetchCategoryNames = async (ids, type) => {
-    try {
-      const endpoint = type === 'product' ? 'categories' : 'services/categories';
-      const response = await axios.get(`${API_URL}/api/${endpoint}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const allCats = response.data.data || [];
-      const filtered = allCats.filter(cat => 
-        ids.includes(cat.category_id || cat.service_category_id)
-      );
-      setTargetCategories(filtered);
-    } catch (err) {
-      console.error('Error fetching target categories:', err);
     }
   };
 
@@ -192,91 +138,16 @@ const AdDetail = () => {
             )}
           </div>
 
-          {/* Targeting Info */}
+          {/* Advertiser Info */}
           <div className="rounded-xl overflow-hidden p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
             <div className="flex items-center gap-2 mb-4">
-              <Target className="w-5 h-5" style={{ color: '#6366F1' }} />
-              <h2 className="text-lg font-semibold" style={{ color: '#FFFFFF' }}>Targeting Settings</h2>
+              <Tag className="w-5 h-5" style={{ color: '#6366F1' }} />
+              <h2 className="text-lg font-semibold" style={{ color: '#FFFFFF' }}>Advertiser Note</h2>
             </div>
-            
-            <div className="space-y-6">
-              {/* Target Products */}
-              {ad.vendor_id && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Package className="w-4 h-4" style={{ color: '#9E9E9E' }} />
-                    <h3 className="text-sm font-medium" style={{ color: '#9E9E9E' }}>Specific Products</h3>
-                  </div>
-                  {targetProducts.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {targetProducts.map(p => (
-                        <span key={p.product_id} className="px-3 py-1 rounded-lg text-xs" style={{ background: '#1E1E2C', color: '#FFFFFF', border: '1px solid #2A2A3A' }}>
-                          {p.name}
-                        </span>
-                      ))}
-                    </div>
-                  ) : ad.target_product_ids?.length > 0 ? (
-                    <p className="text-xs italic" style={{ color: '#6B6B80' }}>Loading product names...</p>
-                  ) : (
-                    <p className="text-xs italic" style={{ color: '#6B6B80' }}>All vendor products (no specific products selected)</p>
-                  )}
-                </div>
-              )}
-
-              {/* Target Services */}
-              {ad.provider_id && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Package className="w-4 h-4" style={{ color: '#9E9E9E' }} />
-                    <h3 className="text-sm font-medium" style={{ color: '#9E9E9E' }}>Specific Services</h3>
-                  </div>
-                  {targetServices.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {targetServices.map(s => (
-                        <span key={s.service_id} className="px-3 py-1 rounded-lg text-xs" style={{ background: '#1E1E2C', color: '#FFFFFF', border: '1px solid #2A2A3A' }}>
-                          {s.name}
-                        </span>
-                      ))}
-                    </div>
-                  ) : ad.target_service_ids?.length > 0 ? (
-                    <p className="text-xs italic" style={{ color: '#6B6B80' }}>Loading service names...</p>
-                  ) : (
-                    <p className="text-xs italic" style={{ color: '#6B6B80' }}>All provider services (no specific services selected)</p>
-                  )}
-                </div>
-              )}
-
-              {/* Target Categories */}
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Layers className="w-4 h-4" style={{ color: '#9E9E9E' }} />
-                  <h3 className="text-sm font-medium" style={{ color: '#9E9E9E' }}>Categories</h3>
-                </div>
-                {targetCategories.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {targetCategories.map(c => (
-                      <span key={c.category_id || c.service_category_id} className="px-3 py-1 rounded-lg text-xs" style={{ background: '#1E1E2C', color: '#FFFFFF', border: '1px solid #2A2A3A' }}>
-                        {c.name}
-                      </span>
-                    ))}
-                  </div>
-                ) : ad.target_category_ids?.length > 0 ? (
-                  <p className="text-xs italic" style={{ color: '#6B6B80' }}>Loading category names...</p>
-                ) : (
-                  <p className="text-xs italic" style={{ color: '#6B6B80' }}>No specific categories selected</p>
-                )}
-              </div>
-
-              {ad.search_keyword && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Hash className="w-4 h-4" style={{ color: '#9E9E9E' }} />
-                    <h3 className="text-sm font-medium" style={{ color: '#9E9E9E' }}>Search Keyword</h3>
-                  </div>
-                  <p className="text-sm" style={{ color: '#FFFFFF' }}>{ad.search_keyword}</p>
-                </div>
-              )}
-            </div>
+            <p className="text-sm" style={{ color: '#9E9E9E' }}>
+              This ad will automatically filter search results to show all items from <strong>{ad.advertiser_name}</strong>.
+              Vendors filter for Products, and Service Providers filter for Services.
+            </p>
           </div>
         </div>
 
