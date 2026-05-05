@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
-import { Loader2, Megaphone, Check, X } from 'lucide-react';
+import { Loader2, Megaphone, Check, X, Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -104,10 +105,17 @@ const PendingAds = () => {
                       {ad.title || 'Untitled Ad'}
                     </p>
                     <p className="text-xs mt-0.5 truncate" style={{ color: '#6B6B80' }}>
-                      By User ID: {ad.user_id}
+                      By: {ad.advertiser_name || 'Unknown'} ({ad.advertiser_type})
                     </p>
                   </div>
                 </div>
+                <Link
+                  to={`/pending-ads/${ad.ad_id}`}
+                  className="p-2 rounded-lg transition-colors"
+                  style={{ color: '#6B6B80', background: 'rgba(255,255,255,0.05)' }}
+                >
+                  <Eye className="w-4 h-4" />
+                </Link>
               </div>
 
               <div className="mb-4 flex-1">
