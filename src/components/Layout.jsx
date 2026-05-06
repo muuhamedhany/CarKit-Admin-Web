@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Store, Wrench, Menu, LogOut, PackageCheck, ShoppingBag, CalendarDays, Megaphone, Database } from 'lucide-react';
+import { LayoutDashboard, Store, Wrench, Menu, LogOut, PackageCheck, ShoppingBag, CalendarDays, Megaphone, Database } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../assets/carkit-logo.png';
@@ -24,7 +24,6 @@ const Layout = () => {
     { name: 'Pending Ads', href: '/pending-ads', icon: Megaphone },
     { name: 'Vendors', href: '/vendors', icon: Store },
     { name: 'Service Providers', href: '/service-providers', icon: Wrench },
-    { name: 'Users', href: '/users', icon: Users },
     { name: 'Orders', href: '/orders', icon: ShoppingBag },
     { name: 'Bookings', href: '/bookings', icon: CalendarDays },
     ...(isSuperAdmin
@@ -38,18 +37,19 @@ const Layout = () => {
     <div className="h-screen flex overflow-hidden font-['Space_Grotesk']" style={{ background: 'var(--bg-primary)' }}>
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 h-screen w-72 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:translate-x-0 md:static md:inset-auto flex flex-col overflow-hidden glass-panel rounded-none border-y-0 border-l-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 h-screen transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] 
+          md:translate-x-0 md:static md:inset-auto flex flex-col overflow-hidden glass-panel rounded-none border-y-0 border-l-0 
+          group w-72 md:w-20 md:hover:w-72 
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
         style={{ borderColor: 'var(--border-subtle)' }}
       >
         {/* Logo area */}
-        <div className="flex h-20 shrink-0 items-center justify-between px-6 bg-black/20" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+        <div className="flex h-20 shrink-0 items-center justify-between px-4 bg-black/20" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
           <div className="flex items-center gap-3">
-            <div className="p-2">
-              <img src={logo} alt="CarKit" className="h-4 w-auto" />
+            <div className="w-12 flex justify-center shrink-0">
+              <img src={logo} alt="CarKit" className="h-6 w-auto object-contain" />
             </div>
-            <div>
+            <div className="md:opacity-0 group-hover:opacity-100 transition-all duration-500 whitespace-nowrap overflow-hidden">
               <h1 className="text-sm font-bold tracking-widest uppercase text-white leading-tight">CarKit</h1>
               <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-cyber-pink">System Control</span>
             </div>
@@ -61,7 +61,7 @@ const Layout = () => {
 
         {/* Navigation */}
         <div className="flex min-h-0 flex-1 flex-col">
-          <nav className="flex-1 min-h-0 space-y-2 overflow-y-auto px-4 py-8 custom-scrollbar">
+          <nav className="flex-1 min-h-0 space-y-2 overflow-y-auto px-4 py-4 custom-scrollbar">
             {navigation.map((item) => {
               const Icon = item.icon;
               return (
@@ -70,7 +70,7 @@ const Layout = () => {
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={({ isActive }) =>
-                    `group flex items-center gap-4 px-4 py-3.5 text-xs font-bold tracking-wider uppercase rounded-xl transition-all duration-300 ${
+                    `group/item flex items-center gap-4 px-4 py-3.5 text-xs font-bold tracking-wider uppercase rounded-xl transition-all duration-300 overflow-hidden ${
                       isActive
                         ? 'text-white'
                         : 'text-text-secondary hover:text-white hover:bg-white/5'
@@ -81,8 +81,10 @@ const Layout = () => {
                     boxShadow: 'inset 4px 0 0 var(--accent-pink)',
                   } : {}}
                 >
-                  <Icon className={`w-4 h-4 transition-transform duration-300 group-hover:scale-110 ${sidebarOpen ? 'animate-pulse' : ''}`} />
-                  <span className="display-font">{item.name}</span>
+                  <Icon className={`w-4 h-4 shrink-0 transition-transform duration-300 group-hover/item:scale-110 ${sidebarOpen ? 'animate-pulse' : ''}`} />
+                  <span className="display-font md:opacity-0 group-hover:opacity-100 transition-all duration-500 whitespace-nowrap overflow-hidden">
+                    {item.name}
+                  </span>
                 </NavLink>
               );
             })}
@@ -91,11 +93,13 @@ const Layout = () => {
           {/* User info + Logout */}
           <div className="shrink-0 px-4 py-6 bg-black/10" style={{ borderTop: '1px solid var(--border-subtle)' }}>
             {admin && (
-              <div className="flex items-center gap-3 px-4 py-3 mb-4 rounded-xl bg-white/5 border border-white/5">
-                <div className="w-8 h-8 rounded-full bg-cyber-purple/20 flex items-center justify-center text-cyber-purple font-bold text-xs border border-cyber-purple/30">
-                  {admin.name?.[0]?.toUpperCase() || 'A'}
+              <div className="flex items-center gap-3  py-3 mb-4 rounded-xl bg-white/5 border border-white/5 overflow-hidden">
+                <div className="w-12 flex justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-cyber-purple/20 flex items-center justify-center text-cyber-purple font-bold text-xs border border-cyber-purple/30">
+                    {admin.name?.[0]?.toUpperCase()}
+                  </div>
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 md:opacity-0 group-hover:opacity-100 transition-all duration-500 whitespace-nowrap overflow-hidden">
                   <p className="text-[11px] font-bold text-white truncate">{admin.name}</p>
                   <p className="text-[9px] text-text-secondary truncate uppercase tracking-tighter">{admin.role}</p>
                 </div>
@@ -103,11 +107,15 @@ const Layout = () => {
             )}
             <button
               onClick={handleLogout}
-              className="cyber-button flex items-center justify-center gap-3 w-full px-4 py-3 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 hover:bg-cyber-pink hover:text-white group border border-white/5"
+              className="cyber-button flex items-center px-2 py-3 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 hover:bg-cyber-pink hover:text-white group/btn border border-white/5 w-full"
               style={{ color: 'var(--text-secondary)' }}
             >
-              <LogOut className="w-4 h-4 transition-transform group-hover:rotate-12" />
-              Sign Out
+              <div className="w-8 flex justify-center shrink-0">
+                <LogOut className="w-4 h-4 transition-transform group-hover/btn:rotate-12" />
+              </div>
+              <span className="md:opacity-0 group-hover:opacity-100 transition-all duration-500 whitespace-nowrap overflow-hidden ml-1">
+                Sign Out
+              </span>
             </button>
           </div>
         </div>

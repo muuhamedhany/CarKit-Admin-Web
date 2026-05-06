@@ -8,7 +8,6 @@ import Vendors from './pages/Vendors';
 import VendorDetail from './pages/VendorDetail';
 import ServiceProviders from './pages/ServiceProviders';
 import ProviderDetail from './pages/ProviderDetail';
-import Users from './pages/Users';
 import Dashboard from './pages/Dashboard';
 import PendingProducts from './pages/PendingProducts';
 import ProductDetail from './pages/ProductDetail';
@@ -58,7 +57,6 @@ function App() {
           <Route path="service-providers/:id" element={<ProtectedRoute requiredRole="admin"><ProviderDetail /></ProtectedRoute>} />
 
           {/* Admin routes (Regular Admin + Super Admin) */}
-          <Route path="users" element={<ProtectedRoute requiredRole="admin"><Users /></ProtectedRoute>} />
           <Route path="orders" element={<ProtectedRoute requiredRole="admin"><Orders /></ProtectedRoute>} />
           <Route path="orders/:id" element={<ProtectedRoute requiredRole="admin"><OrderDetail /></ProtectedRoute>} />
           <Route path="bookings" element={<ProtectedRoute requiredRole="admin"><Bookings /></ProtectedRoute>} />
