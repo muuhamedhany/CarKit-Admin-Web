@@ -36,7 +36,7 @@ const Login = () => {
     if (result.success) {
       navigate('/dashboard', { replace: true });
     } else {
-      setError(result.message);
+      setError('Wrong cardinaities');
     }
   };
 

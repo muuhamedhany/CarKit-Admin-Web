@@ -2,6 +2,14 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+const hasRequiredRole = (adminRole, requiredRole) => {
+  if (!requiredRole) return true;
+  if (requiredRole === 'admin') {
+    return adminRole === 'admin' || adminRole === 'superadmin';
+  }
+  return adminRole === requiredRole;
+};
+
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { admin, isAuthenticated, loading } = useAuth();
 
@@ -17,7 +25,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && admin?.role !== requiredRole) {
+  if (!hasRequiredRole(admin?.role, requiredRole)) {
     const defaultPage = admin?.role === 'superadmin' ? '/db-explorer' : '/dashboard';
     return <Navigate to={defaultPage} replace />;
   }

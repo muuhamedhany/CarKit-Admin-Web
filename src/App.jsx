@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import Login from './pages/Login';
@@ -25,7 +25,8 @@ import './pages/Login.css';
 
 const IndexRedirect = () => {
   const { admin } = useAuth();
-  return <Navigate to={admin?.role === 'superadmin' ? "/db-explorer" : "/dashboard"} replace />;
+  const isSuperAdmin = admin?.role === 'superadmin';
+  return <Navigate to={isSuperAdmin ? "/db-explorer" : "/dashboard"} replace />;
 };
 
 function App() {

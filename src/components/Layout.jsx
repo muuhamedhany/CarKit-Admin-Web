@@ -17,18 +17,17 @@ const Layout = () => {
     navigate('/login', { replace: true });
   };
 
-  const navigation = isSuperAdmin 
-    ? [
-        { name: 'DB Explorer', href: '/db-explorer', icon: LayoutDashboard }
-      ]
-    : [
-        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-        { name: 'Pending Products', href: '/pending-products', icon: PackageCheck },
-        { name: 'Pending Services', href: '/pending-services', icon: Wrench },
-        { name: 'Pending Ads', href: '/pending-ads', icon: Megaphone },
-        { name: 'Vendors', href: '/vendors', icon: Store },
-        { name: 'Service Providers', href: '/service-providers', icon: Wrench },
-      ];
+  const navigation = [
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Pending Products', href: '/pending-products', icon: PackageCheck },
+    { name: 'Pending Services', href: '/pending-services', icon: Wrench },
+    { name: 'Pending Ads', href: '/pending-ads', icon: Megaphone },
+    { name: 'Vendors', href: '/vendors', icon: Store },
+    { name: 'Service Providers', href: '/service-providers', icon: Wrench },
+    ...(isSuperAdmin
+      ? [{ name: 'DB Explorer', href: '/db-explorer', icon: LayoutDashboard }]
+      : []),
+  ];
 
   return (
     <div className="min-h-screen flex overflow-hidden" style={{ background: '#0F0F1A', fontFamily: "'Poppins', sans-serif" }}>
