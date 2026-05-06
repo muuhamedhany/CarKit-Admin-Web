@@ -48,16 +48,13 @@ const Login = () => {
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo/Brand Section */}
-        <div className="flex flex-col items-center mb-12 animate-fade-in">
-          <div className="w-20 h-20 rounded-3xl bg-black border border-white/10 flex items-center justify-center neo-border-purple relative overflow-hidden group mb-6">
-            <div className="absolute inset-0 bg-cyber-purple/5 group-hover:bg-cyber-purple/10 transition-colors" />
-            <img src={logo} alt="CarKit" className="h-10 w-auto relative z-10 group-hover:scale-110 transition-transform duration-500" />
-            <div className="absolute inset-0 bg-gradient-to-t from-cyber-purple/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="flex justify-center gap-2 items-center mb-6 animate-fade-in">
+          <div className="rounded-3xl bg-black flex items-center justify-center mb-4">
+            <img src={logo} alt="CarKit" className="h-10 w-auto" />
           </div>
-          <h1 className="text-4xl font-black text-white tracking-tighter display-font uppercase mb-2">
-            CarKit <span className="text-cyber-purple text-glow-purple">Admin</span>
+          <h1 className="text-3xl font-black text-white tracking-tighter display-font uppercase mb-2">
+            <span className="text-cyber-purple text-glow-purple">Admin</span>
           </h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-text-secondary">Industrial Portal Access</p>
         </div>
 
         {/* Login Card */}

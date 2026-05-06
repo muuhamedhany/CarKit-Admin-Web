@@ -46,8 +46,8 @@ const Layout = () => {
         {/* Logo area */}
         <div className="flex h-20 shrink-0 items-center justify-between px-6 bg-black/20" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-cyber-pink/10 neo-border-pink">
-              <img src={logo} alt="CarKit" className="h-6 w-auto" />
+            <div className="p-2">
+              <img src={logo} alt="CarKit" className="h-4 w-auto" />
             </div>
             <div>
               <h1 className="text-sm font-bold tracking-widest uppercase text-white leading-tight">CarKit</h1>
