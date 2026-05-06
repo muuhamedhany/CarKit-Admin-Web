@@ -66,129 +66,150 @@ const Orders = () => {
       day: 'numeric',
     });
   };
-
   const getStatusStyle = (status) => {
     switch (status) {
       case 'delivered':
-        return { bg: 'rgba(34,197,94,0.12)', color: '#4ade80', border: 'rgba(34,197,94,0.25)' };
+        return { bg: 'rgba(34,197,94,0.1)', color: '#4ade80', border: 'rgba(34,197,94,0.2)', glow: '0 0 10px rgba(34,197,94,0.2)' };
       case 'processing':
       case 'shipped':
-        return { bg: 'rgba(59,130,246,0.12)', color: '#60a5fa', border: 'rgba(59,130,246,0.25)' };
+        return { bg: 'rgba(0,212,255,0.1)', color: '#00D4FF', border: 'rgba(0,212,255,0.2)', glow: '0 0 10px rgba(0,212,255,0.2)' };
       case 'cancelled':
-        return { bg: 'rgba(239,68,68,0.12)', color: '#f87171', border: 'rgba(239,68,68,0.25)' };
+        return { bg: 'rgba(255,0,128,0.1)', color: '#FF0080', border: 'rgba(255,0,128,0.2)', glow: '0 0 10px rgba(255,0,128,0.2)' };
       default:
-        return { bg: 'rgba(234,179,8,0.12)', color: '#facc15', border: 'rgba(234,179,8,0.25)' };
+        return { bg: 'rgba(180,92,255,0.1)', color: '#B45CFF', border: 'rgba(180,92,255,0.2)', glow: '0 0 10px rgba(180,92,255,0.2)' };
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="sm:flex sm:items-center sm:justify-between gap-4">
+    <div className="space-y-10 animate-fade-in">
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Orders</h1>
-          <p className="mt-1 text-sm" style={{ color: '#9E9E9E' }}>
-            Review platform orders and update fulfillment status.
-            {!loading && <span style={{ color: '#E91E8C' }}> ({filteredOrders.length} shown)</span>}
+          <h1 className="text-4xl font-black text-white tracking-tighter display-font uppercase">
+            Order Stream
+          </h1>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
+            Monitoring global product fulfillment logistics.
+            {!loading && <span className="text-cyber-pink ml-2">[{filteredOrders.length} transits detected]</span>}
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#6B6B80' }} />
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="relative group w-full md:w-72">
+            <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-cyber-pink transition-colors z-10" />
             <input
               type="text"
-              placeholder="Search orders..."
+              placeholder="SEARCH PROTOCOLS..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-4 py-2.5 rounded-xl text-sm w-full sm:w-72 outline-none transition-all duration-200"
-              style={{ background: '#1E1E2C', border: '1px solid #2A2A3A', color: '#FFFFFF' }}
+              className="w-full pl-12 pr-4 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase outline-none bg-black border border-white/10 text-white focus:neo-border-pink transition-all placeholder:text-white/20"
             />
           </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2.5 rounded-xl text-sm outline-none transition-all duration-200"
-            style={{ background: '#1E1E2C', border: '1px solid #2A2A3A', color: '#FFFFFF' }}
-          >
-            {STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>
-                {status === 'all' ? 'All statuses' : status.charAt(0).toUpperCase() + status.slice(1)}
-              </option>
-            ))}
-          </select>
+          <div className="relative group w-full md:w-56">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-blue to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="relative w-full rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none"
+            >
+              {STATUS_OPTIONS.map((status) => (
+                <option key={status} value={status}>
+                  {status === 'all' ? 'FILTER: GLOBAL' : `STATUS: ${status.toUpperCase()}`}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-blue transition-colors">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#E91E8C' }} />
+        <div className="flex flex-col items-center justify-center py-32 space-y-4">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full border-2 border-cyber-pink/20 border-t-cyber-pink animate-spin" />
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Syncing Nexus</span>
         </div>
       ) : error ? (
-        <div className="rounded-xl p-6 text-center" style={{ background: 'rgba(233,30,140,0.1)', border: '1px solid rgba(233,30,140,0.3)', color: '#FF69B4' }}>
-          {error}
+        <div className="glass-panel p-8 text-center border-cyber-pink/30 bg-cyber-pink/5">
+          <p className="text-xs font-black text-cyber-pink uppercase tracking-widest">{error}</p>
         </div>
       ) : filteredOrders.length === 0 ? (
-        <div className="rounded-xl p-12 text-center" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <Package className="w-12 h-12 mx-auto mb-3" style={{ color: '#6B6B80' }} />
-          <p style={{ color: '#6B6B80' }}>{search || statusFilter !== 'all' ? 'No matching orders found.' : 'No orders yet.'}</p>
+        <div className="glass-panel p-20 text-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-cyber-purple/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Package className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-purple/20 transition-colors" />
+          <p className="text-sm font-black uppercase tracking-widest text-text-secondary">
+            {search || statusFilter !== 'all' ? 'No matching logs in cache' : 'Stream idle - zero orders'}
+          </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {filteredOrders.map((order) => {
             const status = String(order.status || 'pending').toLowerCase();
             const s = getStatusStyle(status);
             return (
               <button
                 key={order.order_id}
-                type="button"
                 onClick={() => navigate(`/orders/${order.order_id}`)}
-                className="text-left rounded-xl p-5 transition-all duration-200 hover:scale-[1.01] group cursor-pointer flex flex-col h-full"
-                style={{ background: '#12121F', border: '1px solid #2A2A3A' }}
+                className="glass-panel p-6 group cursor-pointer relative overflow-hidden flex flex-col h-full text-left border-white/5 hover:border-white/20 transition-all active:scale-[0.98]"
               >
-                <div className="flex items-start justify-between gap-3 mb-4">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl" style={{ background: 'rgba(233,30,140,0.15)', color: '#E91E8C' }}>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-cyber-pink/5 skew-x-[-20deg] translate-x-12 -translate-y-12 group-hover:translate-x-8 transition-transform duration-700" />
+                
+                <div className="flex items-start justify-between gap-4 mb-8 relative z-10">
+                  <div className="flex items-center gap-4 min-w-0">
+                    <div className="w-12 h-12 rounded-xl bg-black border border-white/10 flex items-center justify-center text-cyber-purple transition-all group-hover:neo-border-purple">
                       <ShoppingBag className="w-5 h-5" />
                     </div>
                     <div className="min-w-0">
-                      <p className="font-semibold text-sm truncate" style={{ color: '#FFFFFF' }}>Order #{order.order_id}</p>
-                      <p className="text-xs mt-0.5 truncate" style={{ color: '#6B6B80' }}>{order.user_name || 'Unknown customer'}</p>
+                      <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">TRACKING #{order.order_id}</p>
+                      <p className="text-sm font-black text-white display-font uppercase tracking-tight truncate mt-0.5">
+                        {order.user_name || 'ANONYMOUS_ENTITY'}
+                      </p>
                     </div>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium border" style={{ background: s.bg, color: s.color, borderColor: s.border }}>
-                    <CircleDashed className="w-3.5 h-3.5" />
+                  <span
+                    className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[8px] font-black uppercase tracking-widest border shrink-0 transition-all"
+                    style={{ background: s.bg, color: s.color, borderColor: s.border, boxShadow: s.glow }}
+                  >
+                    <div className="w-1 h-1 rounded-full bg-current animate-pulse" />
                     {status}
                   </span>
                 </div>
 
-                <div className="space-y-3 flex-1">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs" style={{ color: '#9E9E9E' }}>Customer</span>
-                    <span className="text-sm text-right truncate" style={{ color: '#FFFFFF' }}>{order.user_email || '—'}</span>
+                <div className="space-y-4 flex-1 relative z-10 mb-8">
+                  <div className="flex justify-between items-center px-4 py-2.5 rounded-lg bg-white/[0.02] border border-white/5">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-text-secondary">NEXUS ID</span>
+                    <span className="text-[10px] font-bold text-white uppercase tracking-tight truncate max-w-[150px]">{order.user_email || '—'}</span>
                   </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs" style={{ color: '#9E9E9E' }}>Total</span>
-                    <span className="font-semibold text-sm" style={{ color: '#E91E8C' }}>{Number(order.total_amount || 0).toLocaleString('en-EG')} EGP</span>
+                  <div className="flex justify-between items-center px-4 py-2.5 rounded-lg bg-white/[0.02] border border-white/5">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-text-secondary">CREDIT</span>
+                    <span className="text-xs font-black text-cyber-pink display-font">{Number(order.total_amount || 0).toLocaleString('en-EG')} EGP</span>
                   </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs" style={{ color: '#9E9E9E' }}>Placed</span>
-                    <span className="text-sm" style={{ color: '#FFFFFF' }}>{formatDate(order.order_date)}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs" style={{ color: '#9E9E9E' }}>Delivery</span>
-                    <span className="text-sm" style={{ color: '#FFFFFF' }}>{formatDate(order.preferred_delivery_date)}</span>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1 p-3 rounded-lg bg-white/[0.02] border border-white/5">
+                      <span className="text-[8px] font-black uppercase tracking-widest text-text-secondary">LAUNCH</span>
+                      <span className="text-[10px] font-bold text-white uppercase tracking-tight">{formatDate(order.order_date)}</span>
+                    </div>
+                    <div className="flex flex-col gap-1 p-3 rounded-lg bg-white/[0.02] border border-white/5">
+                      <span className="text-[8px] font-black uppercase tracking-widest text-text-secondary">ETA</span>
+                      <span className="text-[10px] font-bold text-white uppercase tracking-tight">{formatDate(order.preferred_delivery_date)}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 flex items-center justify-between" style={{ borderTop: '1px solid #1E1E2C' }}>
-                  <div className="flex items-center gap-2 text-xs" style={{ color: '#6B6B80' }}>
-                    <Clock3 className="w-3.5 h-3.5" />
-                    {order.estimated_delivery_start || order.estimated_delivery_end ? `${formatDate(order.estimated_delivery_start)} - ${formatDate(order.estimated_delivery_end)}` : 'No estimate'}
+                <div className="mt-auto pt-6 border-t border-white/5 relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-[9px] font-bold text-text-secondary truncate max-w-[180px]">
+                    <Clock3 className="w-3 h-3 shrink-0 text-cyber-purple" />
+                    <span className="truncate uppercase tracking-wider">
+                      {order.estimated_delivery_start || order.estimated_delivery_end ? `${formatDate(order.estimated_delivery_start)} - ${formatDate(order.estimated_delivery_end)}` : 'ESTIMATE_PENDING'}
+                    </span>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: '#E91E8C' }}>
-                    View details
-                    <ArrowRight className="w-3.5 h-3.5" />
+                  <span className="inline-flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-cyber-pink opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                    ACCESS <ArrowRight className="w-3 h-3" />
                   </span>
                 </div>
               </button>

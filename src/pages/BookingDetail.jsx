@@ -56,14 +56,14 @@ const BookingDetail = () => {
   const getStatusStyle = (status) => {
     switch (status) {
       case 'completed':
-        return { bg: 'rgba(34,197,94,0.12)', color: '#4ade80', border: 'rgba(34,197,94,0.25)' };
+        return { bg: 'rgba(34,197,94,0.1)', color: '#4ade80', border: 'rgba(34,197,94,0.2)', glow: '0 0 10px rgba(34,197,94,0.2)' };
       case 'confirmed':
       case 'in-progress':
-        return { bg: 'rgba(59,130,246,0.12)', color: '#60a5fa', border: 'rgba(59,130,246,0.25)' };
+        return { bg: 'rgba(0,212,255,0.1)', color: '#00D4FF', border: 'rgba(0,212,255,0.2)', glow: '0 0 10px rgba(0,212,255,0.2)' };
       case 'cancelled':
-        return { bg: 'rgba(239,68,68,0.12)', color: '#f87171', border: 'rgba(239,68,68,0.25)' };
+        return { bg: 'rgba(255,0,128,0.1)', color: '#FF0080', border: 'rgba(255,0,128,0.2)', glow: '0 0 10px rgba(255,0,128,0.2)' };
       default:
-        return { bg: 'rgba(234,179,8,0.12)', color: '#facc15', border: 'rgba(234,179,8,0.25)' };
+        return { bg: 'rgba(180,92,255,0.1)', color: '#B45CFF', border: 'rgba(180,92,255,0.2)', glow: '0 0 10px rgba(180,92,255,0.2)' };
     }
   };
 
@@ -86,17 +86,27 @@ const BookingDetail = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#E91E8C' }} />
+      <div className="flex flex-col items-center justify-center py-32 space-y-4">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full border-2 border-cyber-pink/20 border-t-cyber-pink animate-spin" />
+        </div>
+        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Accessing Registry</span>
       </div>
     );
   }
 
   if (!booking) {
     return (
-      <div className="text-center py-20">
-        <p style={{ color: '#6B6B80' }}>Booking not found.</p>
-        <button onClick={() => navigate('/bookings')} className="mt-4 text-sm cursor-pointer" style={{ color: '#E91E8C' }}>Back to Bookings</button>
+      <div className="flex flex-col items-center justify-center py-32 gap-6 animate-fade-in">
+        <div className="glass-panel p-8 text-center border-cyber-pink/30 bg-cyber-pink/5">
+          <p className="text-xs font-black text-cyber-pink uppercase tracking-widest text-center">Archive link severed - Booking not found.</p>
+        </div>
+        <button
+          onClick={() => navigate('/bookings')}
+          className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
+        >
+          Return to Registry
+        </button>
       </div>
     );
   }
@@ -107,107 +117,142 @@ const BookingDetail = () => {
   const vehicleText = [booking.make_name, booking.model_name, booking.vehicle_year].filter(Boolean).join(' ') || '—';
 
   return (
-    <div className="space-y-6 max-w-6xl">
-      <button
-        onClick={() => navigate('/bookings')}
-        className="inline-flex items-center gap-2 text-sm transition-colors duration-200 cursor-pointer"
-        style={{ color: '#9E9E9E' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#E91E8C')}
-        onMouseLeave={(e) => (e.currentTarget.style.color = '#9E9E9E')}
-      >
-        <ArrowLeft className="w-4 h-4" /> Back to Bookings
-      </button>
+    <div className="max-w-6xl mx-auto space-y-10 animate-fade-in pb-20">
+      {/* Navigation & Header */}
+      <div className="flex flex-col gap-6">
+        <button
+          onClick={() => navigate('/bookings')}
+          className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary hover:text-cyber-pink transition-colors group"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          Back to Booking Registry
+        </button>
 
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center justify-center w-14 h-14 rounded-2xl text-lg font-bold" style={{ background: 'rgba(233,30,140,0.15)', color: '#E91E8C' }}>
-            <CalendarDays className="w-6 h-6" />
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="flex items-center gap-6">
+            <div className="w-20 h-20 rounded-2xl bg-black border border-white/10 flex items-center justify-center text-cyber-purple neo-border-purple relative overflow-hidden group">
+              <div className="absolute inset-0 bg-cyber-purple/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <CalendarDays className="w-10 h-10 relative z-10" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-black text-white tracking-tighter display-font uppercase">
+                Booking #{booking.booking_id}
+              </h1>
+              <div className="flex items-center gap-4 mt-2">
+                <span 
+                  className="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border animate-pulse"
+                  style={{ background: s.bg, color: s.color, borderColor: s.border, boxShadow: s.glow }}
+                >
+                  {status}
+                </span>
+                <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">
+                  PROTOCOL: {booking.service_name || 'SYSTEM_PROCEDURE'}
+                </span>
+              </div>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>Booking #{booking.booking_id}</h1>
-            <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium mt-1 border" style={{ background: s.bg, color: s.color, borderColor: s.border }}>
-              <CircleDashed className="w-3.5 h-3.5" />
-              {status}
-            </span>
-          </div>
-        </div>
 
-        <div className="rounded-xl px-4 py-3 text-right" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <div className="text-xs" style={{ color: '#9E9E9E' }}>Booking price</div>
-          <div className="text-xl font-bold" style={{ color: '#E91E8C' }}>{Number(booking.booking_price || 0).toLocaleString('en-EG')} EGP</div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <h2 className="text-base font-semibold mb-5" style={{ color: '#FFFFFF' }}>Customer Information</h2>
-          <div className="space-y-4">
-            <InfoRow label="Customer" value={booking.customer_name || '—'} icon={UserCircle} />
-            <InfoRow label="Email" value={booking.customer_email || '—'} icon={Mail} />
-            <InfoRow label="Phone" value={booking.customer_phone || '—'} icon={Phone} />
-          </div>
-        </div>
-
-        <div className="rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <h2 className="text-base font-semibold mb-5" style={{ color: '#FFFFFF' }}>Service Information</h2>
-          <div className="space-y-4">
-            <InfoRow label="Service" value={booking.service_name || '—'} icon={Wrench} />
-            <InfoRow label="Provider" value={booking.provider_name || '—'} icon={UserCircle} />
-            <InfoRow label="Duration" value={booking.service_duration ? `${booking.service_duration} min` : '—'} icon={Clock3} />
+          <div className="glass-panel px-8 py-5 border-white/5 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-1 h-full bg-cyber-pink opacity-50" />
+            <div className="text-[8px] font-black text-text-secondary uppercase tracking-[0.3em] mb-1">TRANSACTION_VALUE</div>
+            <div className="text-2xl font-black text-cyber-pink display-font uppercase tracking-tight">
+              {Number(booking.booking_price || 0).toLocaleString('en-EG')} EGP
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="lg:col-span-2 rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <h2 className="text-base font-semibold mb-5" style={{ color: '#FFFFFF' }}>Booking Schedule & Location</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <InfoRow label="Date" value={formatDate(booking.booking_date)} icon={CalendarDays} />
-            <InfoRow label="Time" value={`${formatTime(booking.start_time)}${booking.end_time ? ` - ${formatTime(booking.end_time)}` : ''}`} icon={Clock3} />
-            <InfoRow label="Location" value={locationText} icon={MapPin} />
-            <InfoRow label="Location Type" value={booking.location_type || '—'} icon={MapPin} />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="lg:col-span-8 space-y-10">
+          {/* Main Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="glass-panel p-8 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-50" />
+              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-2">
+                <UserCircle className="w-4 h-4 text-cyber-blue" /> CUSTOMER_ENTITY
+              </h2>
+              <div className="space-y-6">
+                <InfoRow label="ENTITY_NAME" value={booking.customer_name || '—'} icon={UserCircle} color="blue" />
+                <InfoRow label="NEXUS_EMAIL" value={booking.customer_email || '—'} icon={Mail} color="blue" />
+                <InfoRow label="COMMS_LINK" value={booking.customer_phone || '—'} icon={Phone} color="blue" />
+              </div>
+            </div>
+
+            <div className="glass-panel p-8 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-50" />
+              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-cyber-purple" /> SERVICE_SPEC
+              </h2>
+              <div className="space-y-6">
+                <InfoRow label="PROCEDURE" value={booking.service_name || '—'} icon={Wrench} color="purple" />
+                <InfoRow label="EXEC_NODE" value={booking.provider_name || '—'} icon={UserCircle} color="purple" />
+                <InfoRow label="EST_DURATION" value={booking.service_duration ? `${booking.service_duration} min` : '—'} icon={Clock3} color="purple" />
+              </div>
+            </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <InfoRow label="Vehicle" value={vehicleText} icon={Car} />
-            <InfoRow label="Vehicle Color" value={booking.vehicle_color || '—'} icon={Car} />
-          </div>
+          {/* Schedule & Vehicle */}
+          <div className="glass-panel p-8 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-white opacity-20" />
+            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-10 flex items-center gap-2">
+              <MapPin className="w-4 h-4" /> LOGISTICS_MAP
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+              <InfoRow label="DEPLOY_DATE" value={formatDate(booking.booking_date)} icon={CalendarDays} />
+              <InfoRow label="WINDOW" value={`${formatTime(booking.start_time)}${booking.end_time ? ` - ${formatTime(booking.end_time)}` : ''}`} icon={Clock3} />
+              <InfoRow label="LOC_COORDINATES" value={locationText} icon={MapPin} />
+              <InfoRow label="LOC_TYPE" value={booking.location_type || '—'} icon={MapPin} />
+              <InfoRow label="TARGET_VEHICLE" value={vehicleText} icon={Car} />
+              <InfoRow label="HULL_COATING" value={booking.vehicle_color || '—'} icon={Car} />
+            </div>
 
-          <div className="mt-4">
-            <p className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: '#6B6B80' }}>Notes</p>
-            <div className="rounded-xl p-4" style={{ background: '#1E1E2C', border: '1px solid #2A2A3A' }}>
-              <p className="text-sm whitespace-pre-line" style={{ color: '#FFFFFF' }}>{booking.notes || 'No notes provided.'}</p>
+            <div className="mt-12 pt-10 border-t border-white/5">
+              <p className="text-[8px] font-black uppercase tracking-[0.3em] mb-4 text-text-secondary">OBSERVATIONS</p>
+              <div className="rounded-xl p-6 bg-white/[0.02] border border-white/5">
+                <p className="text-[11px] font-bold tracking-widest text-white leading-relaxed uppercase">
+                  {booking.notes || 'No entity notes recorded.'}
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <h2 className="text-base font-semibold mb-5" style={{ color: '#FFFFFF' }}>Status Actions</h2>
-          <div className="space-y-3">
-            {STATUS_OPTIONS.map((nextStatus) => {
-              const active = nextStatus === status;
-              const isDanger = nextStatus === 'cancelled';
-              return (
-                <button
-                  key={nextStatus}
-                  type="button"
-                  onClick={() => updateStatus(nextStatus)}
-                  disabled={updating || active}
-                  className="w-full inline-flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer disabled:opacity-60"
-                  style={{
-                    background: active ? 'rgba(233,30,140,0.12)' : isDanger ? 'rgba(239,68,68,0.12)' : 'rgba(233,30,140,0.08)',
-                    color: active ? '#E91E8C' : isDanger ? '#f87171' : '#FFFFFF',
-                    border: `1px solid ${active ? 'rgba(233,30,140,0.25)' : isDanger ? 'rgba(239,68,68,0.25)' : 'rgba(233,30,140,0.12)'}`,
-                  }}
-                >
-                  <span className="inline-flex items-center gap-2 capitalize">
-                    {nextStatus === 'cancelled' ? <XCircle className="w-4 h-4" /> : nextStatus === 'completed' ? <CheckCircle2 className="w-4 h-4" /> : <CircleDashed className="w-4 h-4" />}
-                    {nextStatus}
-                  </span>
-                  {updating && active ? 'Updating...' : active ? 'Current' : 'Set status'}
-                </button>
-              );
-            })}
+        <div className="lg:col-span-4 space-y-10">
+          {/* Status Control */}
+          <div className="glass-panel p-8 relative overflow-hidden bg-black/40">
+            <div className="absolute top-0 left-0 w-1 h-full bg-cyber-pink opacity-50" />
+            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white mb-10 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-cyber-pink" /> DECISION_CENTER
+            </h2>
+            <div className="space-y-4">
+              {STATUS_OPTIONS.map((nextStatus) => {
+                const active = nextStatus === status;
+                const isDanger = nextStatus === 'cancelled';
+                const isSuccess = nextStatus === 'completed';
+                
+                return (
+                  <button
+                    key={nextStatus}
+                    onClick={() => updateStatus(nextStatus)}
+                    disabled={updating || active}
+                    className={`w-full group flex items-center justify-between px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border outline-none
+                      ${active ? 'bg-cyber-pink/20 border-cyber-pink/40 text-cyber-pink' : 
+                        isDanger ? 'bg-red-500/5 border-red-500/10 text-red-400 hover:bg-red-500/10 hover:border-red-500/20' :
+                        isSuccess ? 'bg-green-500/5 border-green-500/10 text-green-400 hover:bg-green-500/10 hover:border-green-500/20' :
+                        'bg-white/5 border-white/10 text-text-secondary hover:bg-white/10 hover:text-white'
+                      } disabled:opacity-50`}
+                  >
+                    <span className="flex items-center gap-3">
+                      {nextStatus === 'cancelled' ? <XCircle className="w-4 h-4" /> : 
+                       nextStatus === 'completed' ? <CheckCircle2 className="w-4 h-4 animate-pulse" /> : 
+                       <CircleDashed className={`w-4 h-4 ${active ? 'animate-spin-slow' : ''}`} />}
+                      {nextStatus}
+                    </span>
+                    {updating && active ? 'SYNCING...' : active ? 'CURRENT' : 'DEPLOY'}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -215,17 +260,22 @@ const BookingDetail = () => {
   );
 };
 
-const InfoRow = ({ label, value, icon }) => {
-  const Icon = icon;
+const InfoRow = ({ label, value, icon: Icon, color = 'white' }) => {
+  const colorMap = {
+    pink: 'text-cyber-pink bg-cyber-pink/10',
+    purple: 'text-cyber-purple bg-cyber-purple/10',
+    blue: 'text-cyber-blue bg-cyber-blue/10',
+    white: 'text-white/40 bg-white/5'
+  };
 
   return (
-    <div>
-      <p className="text-xs font-medium uppercase tracking-wider mb-1" style={{ color: '#6B6B80' }}>{label}</p>
-      <div className="flex items-center gap-2.5">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ background: 'rgba(233,30,140,0.1)' }}>
-          <Icon className="w-4 h-4" style={{ color: '#E91E8C' }} />
+    <div className="group/item">
+      <p className="text-[8px] font-black text-text-secondary uppercase tracking-[0.2em] mb-2">{label}</p>
+      <div className="flex items-center gap-4">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${colorMap[color] || colorMap.white} border border-transparent group-hover/item:border-current/20`}>
+          <Icon className="w-5 h-5" />
         </div>
-        <p className="text-sm leading-5 wrap-break-word" style={{ color: '#FFFFFF' }}>{value}</p>
+        <p className="text-[10px] font-black text-white uppercase tracking-widest leading-tight">{value}</p>
       </div>
     </div>
   );

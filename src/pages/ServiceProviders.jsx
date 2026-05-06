@@ -34,95 +34,111 @@ const ServiceProviders = () => {
 
   const getStatusStyle = (status) => {
     switch (status) {
-      case 'approved': return { bg: 'rgba(34,197,94,0.12)', color: '#4ade80', border: 'rgba(34,197,94,0.25)', dot: '#4ade80' };
-      case 'rejected': return { bg: 'rgba(239,68,68,0.12)', color: '#f87171', border: 'rgba(239,68,68,0.25)', dot: '#f87171' };
-      default: return { bg: 'rgba(234,179,8,0.12)', color: '#facc15', border: 'rgba(234,179,8,0.25)', dot: '#facc15' };
+      case 'approved':
+        return { bg: 'rgba(34,197,94,0.1)', color: '#4ade80', border: 'rgba(34,197,94,0.2)', glow: '0 0 10px rgba(34,197,94,0.2)' };
+      case 'rejected':
+        return { bg: 'rgba(255,0,128,0.1)', color: '#FF0080', border: 'rgba(255,0,128,0.2)', glow: '0 0 10px rgba(255,0,128,0.2)' };
+      default:
+        return { bg: 'rgba(180,92,255,0.1)', color: '#B45CFF', border: 'rgba(180,92,255,0.2)', glow: '0 0 10px rgba(180,92,255,0.2)' };
     }
   };
 
   const docCount = (p) => [p.document_1_url, p.document_2_url, p.document_3_url].filter(Boolean).length;
 
   return (
-    <div className="space-y-6">
-      <div className="sm:flex sm:items-center sm:justify-between">
+    <div className="space-y-10 animate-fade-in">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Service Providers</h1>
-          <p className="mt-1 text-sm" style={{ color: '#9E9E9E' }}>
-            Review provider applications and documents.
-            {!loading && <span style={{ color: '#E91E8C' }}> ({providers.length} total)</span>}
+          <h1 className="text-4xl font-black text-white tracking-tighter display-font uppercase">
+            Service Entities
+          </h1>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
+            Vetting and synchronization of platform providers.
+            {!loading && <span className="text-cyber-pink ml-2">[{providers.length} registered nodes]</span>}
           </p>
         </div>
-        <div className="mt-4 sm:mt-0">
+
+        <div className="relative group w-full md:w-56">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-blue to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
           <select
-            className="rounded-xl py-2.5 pl-4 pr-10 text-sm outline-none cursor-pointer"
-            style={{ background: '#1E1E2C', border: '1px solid #2A2A3A', color: '#FFFFFF' }}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
+            className="relative w-full rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none"
           >
-            <option value="all">All Providers</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
+            <option value="all">FILTER: GLOBAL</option>
+            <option value="pending">STATUS: PENDING</option>
+            <option value="approved">STATUS: APPROVED</option>
+            <option value="rejected">STATUS: REJECTED</option>
           </select>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-blue transition-colors">
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#E91E8C' }} />
+        <div className="flex flex-col items-center justify-center py-32 space-y-4">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full border-2 border-cyber-pink/20 border-t-cyber-pink animate-spin" />
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Scanning Registry</span>
         </div>
       ) : providers.length === 0 ? (
-        <div className="rounded-xl p-12 text-center" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <Wrench className="w-12 h-12 mx-auto mb-3" style={{ color: '#6B6B80' }} />
-          <p style={{ color: '#6B6B80' }}>No service providers found.</p>
+        <div className="glass-panel p-20 text-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-cyber-purple/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Wrench className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-purple/20 transition-colors" />
+          <p className="text-sm font-black uppercase tracking-widest text-text-secondary">
+            No provider entities found in sector
+          </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {providers.map((provider) => {
             const status = provider.verification_status || 'pending';
             const s = getStatusStyle(status);
             const docs = docCount(provider);
             return (
-              <div
+              <button
                 key={provider.provider_id}
-                className="rounded-xl p-5 transition-all duration-200 hover:scale-[1.02] group cursor-pointer"
-                style={{ background: '#12121F', border: '1px solid #2A2A3A' }}
                 onClick={() => navigate(`/service-providers/${provider.provider_id}`)}
+                className="glass-panel p-6 group cursor-pointer relative overflow-hidden flex flex-col h-full text-left border-white/5 hover:border-white/20 transition-all active:scale-[0.98]"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="flex items-center justify-center w-11 h-11 rounded-xl text-sm font-bold"
-                      style={{ background: 'rgba(233,30,140,0.15)', color: '#FF69B4' }}
-                    >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-cyber-pink/5 skew-x-[-20deg] translate-x-12 -translate-y-12 group-hover:translate-x-8 transition-transform duration-700" />
+                
+                <div className="flex items-start justify-between gap-4 mb-8 relative z-10">
+                  <div className="flex items-center gap-4 min-w-0">
+                    <div className="w-12 h-12 rounded-xl bg-black border border-white/10 flex items-center justify-center text-cyber-purple transition-all group-hover:neo-border-purple text-lg font-black display-font">
                       {provider.name?.charAt(0)?.toUpperCase() || 'P'}
                     </div>
-                    <div>
-                      <p className="font-semibold text-sm" style={{ color: '#FFFFFF' }}>{provider.name}</p>
-                      <p className="text-xs mt-0.5" style={{ color: '#6B6B80' }}>{provider.contact_info || 'No contact info'}</p>
+                    <div className="min-w-0">
+                      <p className="text-sm font-black text-white display-font uppercase tracking-tight truncate">
+                        {provider.name}
+                      </p>
+                      <p className="text-[9px] font-bold text-text-secondary uppercase tracking-[0.1em] truncate mt-0.5">
+                        {provider.contact_info || 'NO_CONTACT_DATA'}
+                      </p>
                     </div>
                   </div>
                   <span
-                    className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
-                    style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}
+                    className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[8px] font-black uppercase tracking-widest border shrink-0 transition-all"
+                    style={{ background: s.bg, color: s.color, borderColor: s.border, boxShadow: s.glow }}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: s.dot }} />
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                    <div className="w-1 h-1 rounded-full bg-current animate-pulse" />
+                    {status}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid #1E1E2C' }}>
-                  <span className="text-xs" style={{ color: '#6B6B80' }}>
-                    {docs} document{docs !== 1 ? 's' : ''} uploaded
+                <div className="mt-auto pt-6 border-t border-white/5 relative z-10 flex items-center justify-between">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-text-secondary">
+                    {docs} ARCHIVES ATTACHED
                   </span>
-                  <span
-                    className="inline-flex items-center gap-1 text-xs font-medium transition-colors duration-200"
-                    style={{ color: '#E91E8C' }}
-                  >
-                    Review <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+                  <span className="inline-flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-cyber-pink opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                    VET ENTITY <ArrowRight className="w-3 h-3" />
                   </span>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

@@ -1,36 +1,163 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-cyber-pink: #FF0080;
+  --color-cyber-purple: #7B2CBF;
+  --color-cyber-blue: #00D4FF;
+  --color-deep-space: #0A0A0F;
+  --color-surface: #12121E;
+}
+
+:root {
+  --bg-primary: #0A0A0F;
+  --bg-secondary: #12121E;
+  --accent-pink: #FF0080;
+  --accent-purple: #7B2CBF;
+  --accent-blue: #00D4FF;
+  --text-primary: #F8F9FA;
+  --text-secondary: #A0A0B8;
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --glow-pink: 0 0 15px rgba(255, 0, 128, 0.3);
+  --glow-purple: 0 0 15px rgba(123, 44, 191, 0.3);
+}
 
 body {
   margin: 0;
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #0F0F1A;
-  color: #FFFFFF;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(123, 44, 191, 0.05) 0%, transparent 50%),
+    linear-gradient(rgba(18, 18, 30, 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 18, 30, 0.4) 1px, transparent 1px);
+  background-size: 100% 100%, 30px 30px, 30px 30px;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+h1, h2, h3, h4, h5, .display-font {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.02em;
 }
 
-/* Scrollbar styling */
+/* Memorable Design Anchor: The "Scanline" Overlay */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.01), rgba(0, 255, 0, 0.005), rgba(0, 0, 255, 0.01));
+  background-size: 100% 4px, 3px 100%;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.3;
+}
+
+/* High-Craft Utilities */
+.glass-panel {
+  background: rgba(18, 18, 30, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+}
+
+.neo-border-pink {
+  border: 1px solid rgba(255, 0, 128, 0.3);
+  box-shadow: var(--glow-pink);
+}
+
+.neo-border-purple {
+  border: 1px solid rgba(123, 44, 191, 0.3);
+  box-shadow: var(--glow-purple);
+}
+
+.cyber-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cyber-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: 0.5s;
+}
+
+.cyber-button:hover::before {
+  left: 100%;
+}
+
+/* --- Premium Scrollbar Architecture --- */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0A0A14;
+  background: rgba(0, 0, 0, 0.2);
+  border-left: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2A2A3A;
-  border-radius: 3px;
+  background: linear-gradient(to bottom, var(--accent-purple), var(--accent-pink));
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 10px rgba(123, 44, 191, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9C27B0;
+  background: linear-gradient(to bottom, var(--accent-pink), var(--accent-blue));
+  box-shadow: 0 0 15px rgba(255, 0, 128, 0.4);
+}
+
+/* Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-purple) rgba(0, 0, 0, 0.2);
+}
+
+/* Specific Custom Scrollbar Class */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  box-shadow: none;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: var(--accent-purple);
+  box-shadow: 0 0 10px rgba(123, 44, 191, 0.3);
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in-up 0.5s ease-out forwards;
 }

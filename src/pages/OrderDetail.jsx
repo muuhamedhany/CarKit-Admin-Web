@@ -7,6 +7,26 @@ import { ArrowLeft, CheckCircle2, CircleDashed, Clock3, Loader2, Mail, MapPin, P
 const API_URL = import.meta.env.VITE_API_URL;
 const STATUS_OPTIONS = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
 
+const formatDate = (dateString) => {
+  if (!dateString) return '—';
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
+const formatDateTime = (dateString) => {
+  if (!dateString) return '—';
+  return new Date(dateString).toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
 const OrderDetail = () => {
   const { id } = useParams();
   const { token } = useAuth();
@@ -56,50 +76,37 @@ const OrderDetail = () => {
   const getStatusStyle = (status) => {
     switch (status) {
       case 'delivered':
-        return { bg: 'rgba(34,197,94,0.12)', color: '#4ade80', border: 'rgba(34,197,94,0.25)' };
+        return { bg: 'rgba(34,197,94,0.1)', color: '#4ade80', glow: '0 0 15px rgba(34,197,94,0.3)', border: 'rgba(34,197,94,0.2)' };
       case 'processing':
       case 'shipped':
-        return { bg: 'rgba(59,130,246,0.12)', color: '#60a5fa', border: 'rgba(59,130,246,0.25)' };
+        return { bg: 'rgba(0, 212, 255, 0.1)', color: '#00D4FF', glow: '0 0 15px rgba(0, 212, 255, 0.3)', border: 'rgba(0, 212, 255, 0.2)' };
       case 'cancelled':
-        return { bg: 'rgba(239,68,68,0.12)', color: '#f87171', border: 'rgba(239,68,68,0.25)' };
+        return { bg: 'rgba(255, 0, 128, 0.1)', color: '#FF0080', glow: '0 0 15px rgba(255, 0, 128, 0.3)', border: 'rgba(255, 0, 128, 0.2)' };
       default:
-        return { bg: 'rgba(234,179,8,0.12)', color: '#facc15', border: 'rgba(234,179,8,0.25)' };
+        return { bg: 'rgba(123, 44, 191, 0.1)', color: '#7B2CBF', glow: '0 0 15px rgba(123, 44, 191, 0.3)', border: 'rgba(123, 44, 191, 0.2)' };
     }
-  };
-
-  const formatDate = (value) => {
-    if (!value) return '—';
-    return new Date(value).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const formatDateTime = (value) => {
-    if (!value) return '—';
-    return new Date(value).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#E91E8C' }} />
+      <div className="flex flex-col items-center justify-center py-32 space-y-4">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full border-2 border-cyber-pink/20 border-t-cyber-pink animate-spin" />
+        </div>
+        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Retrieving Manifest</span>
       </div>
     );
   }
 
   if (!order) {
     return (
-      <div className="text-center py-20">
-        <p style={{ color: '#6B6B80' }}>Order not found.</p>
-        <button onClick={() => navigate('/orders')} className="mt-4 text-sm cursor-pointer" style={{ color: '#E91E8C' }}>Back to Orders</button>
+      <div className="text-center py-32">
+        <XCircle className="w-16 h-16 text-white/5 mx-auto mb-6" />
+        <h2 className="text-2xl font-bold text-white mb-2 display-font">Record Not Found</h2>
+        <p className="text-text-secondary mb-8">The requested order payload does not exist in the current terminal.</p>
+        <button onClick={() => navigate('/orders')} className="cyber-button px-8 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-bold uppercase tracking-widest">
+          Return to Registry
+        </button>
       </div>
     );
   }
@@ -112,119 +119,154 @@ const OrderDetail = () => {
   const lineTotal = items.reduce((sum, item) => sum + Number(item.quantity || 0) * Number(item.price_each || 0), 0);
 
   return (
-    <div className="space-y-6 max-w-6xl">
-      <button
-        onClick={() => navigate('/orders')}
-        className="inline-flex items-center gap-2 text-sm transition-colors duration-200 cursor-pointer"
-        style={{ color: '#9E9E9E' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#E91E8C')}
-        onMouseLeave={(e) => (e.currentTarget.style.color = '#9E9E9E')}
-      >
-        <ArrowLeft className="w-4 h-4" /> Back to Orders
-      </button>
-
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center justify-center w-14 h-14 rounded-2xl text-lg font-bold" style={{ background: 'rgba(233,30,140,0.15)', color: '#E91E8C' }}>
-            <ShoppingBag className="w-6 h-6" />
+    <div className="space-y-10 animate-fade-in max-w-6xl mx-auto">
+      {/* Top Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-4">
+          <button
+            onClick={() => navigate('/orders')}
+            className="group inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+            Back to Registry
+          </button>
+          <div className="flex items-center gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-black border border-white/5 flex items-center justify-center neo-border-purple group">
+              <ShoppingBag className="w-8 h-8 text-cyber-purple group-hover:scale-110 transition-transform" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-black text-white tracking-tighter display-font leading-none mb-2 uppercase">Order #{order.order_id}</h1>
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border" 
+                      style={{ background: s.bg, color: s.color, borderColor: s.border, boxShadow: s.glow }}>
+                  <div className="w-1 h-1 rounded-full bg-current animate-pulse" />
+                  {status}
+                </span>
+                <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">ID: {order.user_id || 'UNKNOWN_OP'}</span>
+              </div>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>Order #{order.order_id}</h1>
-            <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium mt-1 border" style={{ background: s.bg, color: s.color, borderColor: s.border }}>
-              <CircleDashed className="w-3.5 h-3.5" />
-              {status}
+        </div>
+
+        <div className="glass-panel px-8 py-5 text-right relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-full bg-cyber-pink/10 skew-x-[-20deg] translate-x-16 group-hover:translate-x-12 transition-transform duration-700" />
+          <div className="relative z-10">
+            <div className="text-[10px] font-black tracking-widest uppercase text-text-secondary mb-1">Settlement Value</div>
+            <div className="text-3xl font-black text-cyber-pink display-font">{Number(order.total_amount || 0).toLocaleString('en-EG')} <span className="text-xs">EGP</span></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Grid: Info Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="glass-panel p-8 relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30" />
+          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-2">
+            <div className="w-1.5 h-1.5 bg-cyber-blue rounded-full" /> Operative Identity
+          </h2>
+          <div className="space-y-6">
+            <InfoRow label="Protocol Name" value={order.customer_name || '—'} icon={ShoppingBag} accent="var(--accent-blue)" />
+            <InfoRow label="Secure Email" value={order.customer_email || '—'} icon={Mail} accent="var(--accent-blue)" />
+            <InfoRow label="Transmission Date" value={formatDateTime(order.order_date)} icon={Clock3} accent="var(--accent-blue)" />
+          </div>
+        </div>
+
+        <div className="glass-panel p-8 relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-30" />
+          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-2">
+            <div className="w-1.5 h-1.5 bg-cyber-purple rounded-full" /> Logistic Manifest
+          </h2>
+          <div className="space-y-6">
+            <InfoRow label="Deployment Point" value={shippingAddress} icon={MapPin} accent="var(--accent-purple)" />
+            <InfoRow label="Preferred Window" value={formatDate(order.preferred_delivery_date)} icon={Truck} accent="var(--accent-purple)" />
+            <InfoRow label="ETA Horizon" value={order.estimated_delivery_start || order.estimated_delivery_end ? `${formatDate(order.estimated_delivery_start)} - ${formatDate(order.estimated_delivery_end)}` : 'ANALYZING...'} icon={Clock3} accent="var(--accent-purple)" />
+          </div>
+        </div>
+      </div>
+
+      {/* Grid: Items & Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 glass-panel p-8">
+          <div className="flex items-center justify-between gap-4 mb-8">
+            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font">Payload Composition</h2>
+            <span className="text-[10px] font-black text-cyber-blue px-2 py-0.5 rounded bg-cyber-blue/10 border border-cyber-blue/20">
+              {itemCount} UNITS
             </span>
           </div>
-        </div>
 
-        <div className="rounded-xl px-4 py-3 text-right" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <div className="text-xs" style={{ color: '#9E9E9E' }}>Total amount</div>
-          <div className="text-xl font-bold" style={{ color: '#E91E8C' }}>{Number(order.total_amount || 0).toLocaleString('en-EG')} EGP</div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <h2 className="text-base font-semibold mb-5" style={{ color: '#FFFFFF' }}>Customer Information</h2>
           <div className="space-y-4">
-            <InfoRow label="Customer" value={order.customer_name || '—'} icon={ShoppingBag} />
-            <InfoRow label="Email" value={order.customer_email || '—'} icon={Mail} />
-            <InfoRow label="Order Date" value={formatDateTime(order.order_date)} icon={Clock3} />
-          </div>
-        </div>
-
-        <div className="rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <h2 className="text-base font-semibold mb-5" style={{ color: '#FFFFFF' }}>Delivery Information</h2>
-          <div className="space-y-4">
-            <InfoRow label="Shipping Address" value={shippingAddress} icon={MapPin} />
-            <InfoRow label="Preferred Delivery" value={formatDate(order.preferred_delivery_date)} icon={Truck} />
-            <InfoRow label="Estimated Window" value={order.estimated_delivery_start || order.estimated_delivery_end ? `${formatDate(order.estimated_delivery_start)} - ${formatDate(order.estimated_delivery_end)}` : '—'} icon={Clock3} />
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="lg:col-span-2 rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <div className="flex items-center justify-between gap-3 mb-5">
-            <h2 className="text-base font-semibold" style={{ color: '#FFFFFF' }}>Order Items</h2>
-            <span className="text-sm" style={{ color: '#9E9E9E' }}>{itemCount} items</span>
-          </div>
-
-          <div className="space-y-3">
             {items.length === 0 ? (
-              <div className="rounded-xl p-8 text-center" style={{ background: '#1E1E2C', border: '1px solid #2A2A3A' }}>
-                <Package className="w-10 h-10 mx-auto mb-2" style={{ color: '#6B6B80' }} />
-                <p className="text-sm" style={{ color: '#6B6B80' }}>No order items found.</p>
+              <div className="rounded-2xl p-12 text-center bg-black/40 border border-white/5">
+                <Package className="w-12 h-12 mx-auto mb-4 text-white/5" />
+                <p className="text-xs font-bold uppercase tracking-widest text-text-secondary">No payload detected</p>
               </div>
             ) : (
               items.map((item) => (
-                <div key={item.order_item_id} className="rounded-xl p-4 flex items-center justify-between gap-4" style={{ background: '#1E1E2C', border: '1px solid #2A2A3A' }}>
-                  <div>
-                    <p className="text-sm font-medium" style={{ color: '#FFFFFF' }}>{item.product_name || `Product #${item.product_id}`}</p>
-                    <p className="text-xs mt-1" style={{ color: '#6B6B80' }}>Quantity: {item.quantity}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium" style={{ color: '#E91E8C' }}>{Number(item.price_each || 0).toLocaleString('en-EG')} EGP</p>
-                    <p className="text-xs mt-1" style={{ color: '#6B6B80' }}>Line total: {(Number(item.quantity || 0) * Number(item.price_each || 0)).toLocaleString('en-EG')} EGP</p>
+                <div key={item.order_item_id} className="group relative overflow-hidden rounded-2xl p-6 bg-black/40 border border-white/5 hover:border-white/20 transition-all">
+                  <div className="flex items-center justify-between gap-6 relative z-10">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-white/20 group-hover:text-cyber-blue transition-colors">
+                        <Package size={20} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-white group-hover:text-cyber-blue transition-colors">{item.product_name || `Product #${item.product_id}`}</p>
+                        <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mt-1">Quantity: {item.quantity}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-black text-white display-font">{Number(item.price_each || 0).toLocaleString('en-EG')} EGP</p>
+                      <p className="text-[10px] font-bold text-cyber-pink uppercase tracking-widest mt-1">Line: {(Number(item.quantity || 0) * Number(item.price_each || 0)).toLocaleString('en-EG')} EGP</p>
+                    </div>
                   </div>
                 </div>
               ))
             )}
           </div>
 
-          <div className="mt-4 pt-4 flex items-center justify-between" style={{ borderTop: '1px solid #2A2A3A' }}>
-            <span className="text-sm" style={{ color: '#9E9E9E' }}>Computed total from items</span>
-            <span className="text-sm font-semibold" style={{ color: '#FFFFFF' }}>{lineTotal.toLocaleString('en-EG')} EGP</span>
+          <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary italic">Audit Computed Total</span>
+            <span className="text-lg font-black text-white display-font">{lineTotal.toLocaleString('en-EG')} EGP</span>
           </div>
         </div>
 
-        <div className="rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <h2 className="text-base font-semibold mb-5" style={{ color: '#FFFFFF' }}>Status Actions</h2>
+        <div className="glass-panel p-8">
+          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font mb-8">Override Status</h2>
           <div className="space-y-3">
             {STATUS_OPTIONS.map((nextStatus) => {
               const active = nextStatus === status;
               const isDanger = nextStatus === 'cancelled';
+              const nextStyle = getStatusStyle(nextStatus);
+              
               return (
                 <button
                   key={nextStatus}
                   type="button"
                   onClick={() => updateStatus(nextStatus)}
                   disabled={updating || active}
-                  className="w-full inline-flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer disabled:opacity-60"
+                  className={`cyber-button w-full flex items-center justify-between px-5 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                    active ? 'neo-border-pink bg-cyber-pink/10' : 'bg-white/5 border-white/5'
+                  } disabled:opacity-40`}
                   style={{
-                    background: active ? 'rgba(233,30,140,0.12)' : isDanger ? 'rgba(239,68,68,0.12)' : 'rgba(233,30,140,0.08)',
-                    color: active ? '#E91E8C' : isDanger ? '#f87171' : '#FFFFFF',
-                    border: `1px solid ${active ? 'rgba(233,30,140,0.25)' : isDanger ? 'rgba(239,68,68,0.25)' : 'rgba(233,30,140,0.12)'}`,
+                    color: active ? 'white' : 'var(--text-secondary)',
                   }}
                 >
-                  <span className="inline-flex items-center gap-2 capitalize">
+                  <span className="flex items-center gap-3">
                     {nextStatus === 'cancelled' ? <XCircle className="w-4 h-4" /> : nextStatus === 'delivered' ? <CheckCircle2 className="w-4 h-4" /> : <CircleDashed className="w-4 h-4" />}
                     {nextStatus}
                   </span>
-                  {updating && active ? 'Updating...' : active ? 'Current' : 'Set status'}
+                  {active ? (
+                    <span className="text-[8px] bg-white/10 px-1.5 py-0.5 rounded">ACTIVE</span>
+                  ) : (
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity">UPDATE</span>
+                  )}
                 </button>
               );
             })}
+          </div>
+          <div className="mt-8 p-4 rounded-xl bg-black/40 border border-white/5">
+            <p className="text-[9px] font-medium leading-relaxed text-text-secondary uppercase tracking-tight italic">
+              Status overrides are logged to the persistent security ledger. Ensure manifest verification before deployment.
+            </p>
           </div>
         </div>
       </div>
@@ -232,20 +274,17 @@ const OrderDetail = () => {
   );
 };
 
-const InfoRow = ({ label, value, icon }) => {
-  const Icon = icon;
-
-  return (
-    <div>
-      <p className="text-xs font-medium uppercase tracking-wider mb-1" style={{ color: '#6B6B80' }}>{label}</p>
-      <div className="flex items-center gap-2.5">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ background: 'rgba(233,30,140,0.1)' }}>
-          <Icon className="w-4 h-4" style={{ color: '#E91E8C' }} />
-        </div>
-        <p className="text-sm leading-5 wrap-break-word" style={{ color: '#FFFFFF' }}>{value}</p>
+const InfoRow = ({ label, value, icon: Icon, accent }) => (
+  <div className="group/row">
+    <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-2 text-text-secondary group-hover/row:text-white transition-colors">{label}</p>
+    <div className="flex items-center gap-4">
+      <div className="w-10 h-10 rounded-xl bg-black border border-white/5 flex items-center justify-center transition-all group-hover/row:border-current" style={{ color: accent }}>
+        <Icon className="w-5 h-5 opacity-40 group-hover/row:opacity-100 transition-opacity" />
       </div>
+      <p className="text-sm font-bold text-white/80 group-hover/row:text-white transition-colors">{value}</p>
     </div>
-  );
-};
+  </div>
+);
+
 
 export default OrderDetail;

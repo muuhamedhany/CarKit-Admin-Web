@@ -24,39 +24,44 @@ const Layout = () => {
     { name: 'Pending Ads', href: '/pending-ads', icon: Megaphone },
     { name: 'Vendors', href: '/vendors', icon: Store },
     { name: 'Service Providers', href: '/service-providers', icon: Wrench },
+    { name: 'Users', href: '/users', icon: Users },
+    { name: 'Orders', href: '/orders', icon: ShoppingBag },
+    { name: 'Bookings', href: '/bookings', icon: CalendarDays },
     ...(isSuperAdmin
       ? [
-          { name: 'Users', href: '/users', icon: Users },
-          { name: 'Orders', href: '/orders', icon: ShoppingBag },
-          { name: 'Bookings', href: '/bookings', icon: CalendarDays },
           { name: 'DB Explorer', href: '/db-explorer', icon: Database }
         ]
       : []),
   ];
 
   return (
-    <div className="min-h-screen flex overflow-hidden" style={{ background: '#0F0F1A', fontFamily: "'Poppins', sans-serif" }}>
+    <div className="h-screen flex overflow-hidden font-['Space_Grotesk']" style={{ background: 'var(--bg-primary)' }}>
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 h-screen w-64 shadow-xl transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto flex flex-col overflow-hidden ${
+        className={`fixed inset-y-0 left-0 z-50 h-screen w-72 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:translate-x-0 md:static md:inset-auto flex flex-col overflow-hidden glass-panel rounded-none border-y-0 border-l-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{ background: '#0A0A14', borderRight: '1px solid #2A2A3A' }}
+        style={{ borderColor: 'var(--border-subtle)' }}
       >
         {/* Logo area */}
-        <div className="flex h-16 shrink-0 items-center justify-between px-5" style={{ background: '#08080F', borderBottom: '1px solid #2A2A3A' }}>
-          <div className="flex items-center gap-2">
-            <img src={logo} alt="CarKit" className="h-8 w-auto" />
-            <span className="text-xs font-semibold tracking-wider uppercase" style={{ color: '#9E9E9E' }}>Admin</span>
+        <div className="flex h-20 shrink-0 items-center justify-between px-6 bg-black/20" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-cyber-pink/10 neo-border-pink">
+              <img src={logo} alt="CarKit" className="h-6 w-auto" />
+            </div>
+            <div>
+              <h1 className="text-sm font-bold tracking-widest uppercase text-white leading-tight">CarKit</h1>
+              <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-cyber-pink">System Control</span>
+            </div>
           </div>
-          <button className="md:hidden p-2 rounded-lg hover:bg-white/5" style={{ color: '#9E9E9E' }} onClick={() => setSidebarOpen(false)}>
+          <button className="md:hidden p-2 rounded-lg hover:bg-white/5 text-text-secondary" onClick={() => setSidebarOpen(false)}>
             <Menu className="w-5 h-5" />
           </button>
         </div>
 
         {/* Navigation */}
         <div className="flex min-h-0 flex-1 flex-col">
-          <nav className="flex-1 min-h-0 space-y-1.5 overflow-y-auto px-3 py-6">
+          <nav className="flex-1 min-h-0 space-y-2 overflow-y-auto px-4 py-8 custom-scrollbar">
             {navigation.map((item) => {
               const Icon = item.icon;
               return (
@@ -65,41 +70,43 @@ const Layout = () => {
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
+                    `group flex items-center gap-4 px-4 py-3.5 text-xs font-bold tracking-wider uppercase rounded-xl transition-all duration-300 ${
                       isActive
-                        ? 'shadow-sm'
-                        : 'hover:bg-white/5'
+                        ? 'text-white'
+                        : 'text-text-secondary hover:text-white hover:bg-white/5'
                     }`
                   }
                   style={({ isActive }) => isActive ? {
-                    background: 'rgba(233, 30, 140, 0.1)',
-                    color: '#E91E8C',
-                    border: '1px solid rgba(233, 30, 140, 0.2)',
-                  } : {
-                    color: '#9E9E9E',
-                  }}
+                    background: 'linear-gradient(90deg, rgba(255, 0, 128, 0.15) 0%, transparent 100%)',
+                    boxShadow: 'inset 4px 0 0 var(--accent-pink)',
+                  } : {}}
                 >
-                  <Icon className="w-5 h-5" />
-                  {item.name}
+                  <Icon className={`w-4 h-4 transition-transform duration-300 group-hover:scale-110 ${sidebarOpen ? 'animate-pulse' : ''}`} />
+                  <span className="display-font">{item.name}</span>
                 </NavLink>
               );
             })}
           </nav>
 
           {/* User info + Logout */}
-          <div className="shrink-0 px-3 py-4" style={{ borderTop: '1px solid #2A2A3A' }}>
+          <div className="shrink-0 px-4 py-6 bg-black/10" style={{ borderTop: '1px solid var(--border-subtle)' }}>
             {admin && (
-              <div className="px-4 py-2 mb-2">
-                <p className="text-xs font-medium truncate" style={{ color: '#FFFFFF' }}>{admin.name}</p>
-                <p className="text-xs truncate" style={{ color: '#6B6B80' }}>{admin.email}</p>
+              <div className="flex items-center gap-3 px-4 py-3 mb-4 rounded-xl bg-white/5 border border-white/5">
+                <div className="w-8 h-8 rounded-full bg-cyber-purple/20 flex items-center justify-center text-cyber-purple font-bold text-xs border border-cyber-purple/30">
+                  {admin.name?.[0]?.toUpperCase() || 'A'}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-bold text-white truncate">{admin.name}</p>
+                  <p className="text-[9px] text-text-secondary truncate uppercase tracking-tighter">{admin.role}</p>
+                </div>
               </div>
             )}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:bg-white/5 cursor-pointer"
-              style={{ color: '#9E9E9E' }}
+              className="cyber-button flex items-center justify-center gap-3 w-full px-4 py-3 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 hover:bg-cyber-pink hover:text-white group border border-white/5"
+              style={{ color: 'var(--text-secondary)' }}
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-4 h-4 transition-transform group-hover:rotate-12" />
               Sign Out
             </button>
           </div>
@@ -115,28 +122,32 @@ const Layout = () => {
       )}
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden relative">
         {/* Mobile header */}
-        <div className="md:hidden flex h-14 items-center px-4 shadow-sm" style={{ background: '#0A0A14', borderBottom: '1px solid #2A2A3A' }}>
+        <div className="md:hidden flex h-16 items-center px-6 glass-panel rounded-none border-x-0 border-t-0" style={{ background: 'rgba(10, 10, 15, 0.8)' }}>
           <button
             type="button"
-            className="p-2 rounded-lg hover:bg-white/5"
-            style={{ color: '#9E9E9E' }}
+            className="p-2 rounded-lg hover:bg-white/5 text-text-secondary"
             onClick={() => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>
             <Menu className="h-5 w-5" aria-hidden="true" />
           </button>
-          <div className="flex items-center gap-2 ml-3">
+          <div className="flex items-center gap-3 ml-4">
             <img src={logo} alt="CarKit" className="h-6 w-auto" />
-            <span className="text-xs font-semibold tracking-wider uppercase" style={{ color: '#9E9E9E' }}>Admin</span>
+            <span className="text-xs font-bold tracking-[0.2em] uppercase text-white">Admin Control</span>
           </div>
         </div>
 
         {/* Main section */}
-        <main className="flex-1 overflow-y-auto py-8 px-4 sm:px-6 lg:px-8" style={{ background: '#0F0F1A' }}>
-          <Outlet />
+        <main className="flex-1 overflow-y-auto py-10 px-6 sm:px-10 lg:px-12 relative z-10 custom-scrollbar">
+          <div className="max-w-7xl mx-auto">
+            <Outlet />
+          </div>
         </main>
+
+        {/* Background Decorative Element */}
+        <div className="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-cyber-purple/5 blur-[120px] pointer-events-none" />
       </div>
     </div>
   );

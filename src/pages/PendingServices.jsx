@@ -66,110 +66,97 @@ const PendingServices = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="sm:flex sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>
-            Pending Service Approvals
-          </h1>
-          <p className="mt-1 text-sm" style={{ color: '#9E9E9E' }}>
-            Review and approve new services submitted by providers.
-            {!loading && <span style={{ color: '#E91E8C' }}> ({services.length} pending)</span>}
-          </p>
-        </div>
+    <div className="space-y-10 animate-fade-in">
+      <div>
+        <h1 className="text-4xl font-black text-white tracking-tighter display-font uppercase">
+          Service Intake
+        </h1>
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
+          Review and authorization of provider service submissions.
+          {!loading && <span className="text-cyber-pink ml-2">[{services.length} pending vetting]</span>}
+        </p>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#E91E8C' }} />
+        <div className="flex flex-col items-center justify-center py-32 space-y-4">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full border-2 border-cyber-pink/20 border-t-cyber-pink animate-spin" />
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Syncing Services</span>
         </div>
       ) : services.length === 0 ? (
-        <div className="rounded-xl p-12 text-center" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <Wrench className="w-12 h-12 mx-auto mb-3" style={{ color: '#6B6B80' }} />
-          <p style={{ color: '#6B6B80' }}>No pending services.</p>
+        <div className="glass-panel p-20 text-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-cyber-purple/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Wrench className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-purple/20 transition-colors" />
+          <p className="text-sm font-black uppercase tracking-widest text-text-secondary">
+            Registry clear - no pending services
+          </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {services.map((service) => (
-            <div
+            <button
               key={service.service_id}
-              className="rounded-xl p-5 transition-all duration-200 hover:scale-[1.02] group cursor-pointer flex flex-col h-full"
-              style={{ background: '#12121F', border: '1px solid #2A2A3A' }}
               onClick={() => navigate(`/pending-services/${service.service_id}`)}
+              className="glass-panel p-6 group cursor-pointer relative overflow-hidden flex flex-col h-full text-left border-white/5 hover:border-white/20 transition-all active:scale-[0.98]"
             >
-              <div className="flex items-start justify-between mb-4 flex-1">
-                <div className="flex items-center gap-3">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-cyber-pink/5 skew-x-[-20deg] translate-x-12 -translate-y-12 group-hover:translate-x-8 transition-transform duration-700" />
+              
+              <div className="flex items-start justify-between gap-4 mb-8 relative z-10">
+                <div className="flex items-center gap-4 min-w-0">
                   {service.image_url ? (
                     <img
                       src={service.image_url}
                       alt={service.name}
-                      className="w-12 h-12 rounded-xl object-cover"
-                      style={{ border: '1px solid #2A2A3A' }}
+                      className="w-12 h-12 rounded-xl object-cover bg-black border border-white/10 group-hover:neo-border-pink transition-all"
                     />
                   ) : (
-                    <div
-                      className="flex items-center justify-center w-12 h-12 rounded-xl text-sm font-bold"
-                      style={{ background: 'rgba(233,30,140,0.15)', color: '#E91E8C' }}
-                    >
+                    <div className="w-12 h-12 rounded-xl bg-black border border-white/10 flex items-center justify-center text-cyber-purple transition-all group-hover:neo-border-purple text-lg font-black display-font">
                       {service.name?.charAt(0)?.toUpperCase() || 'S'}
                     </div>
                   )}
                   <div className="min-w-0 pr-2">
-                    <p className="font-semibold text-sm truncate" style={{ color: '#FFFFFF' }} title={service.name}>
+                    <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">INTAKE_ID #{service.service_id}</p>
+                    <p className="text-sm font-black text-white display-font uppercase tracking-tight truncate mt-0.5">
                       {service.name}
                     </p>
-                    <p className="text-xs mt-0.5 truncate" style={{ color: '#6B6B80' }}>
-                      By {service.provider_name || 'Unknown Provider'}
+                    <p className="text-[9px] font-bold text-cyber-purple uppercase tracking-[0.1em] truncate mt-0.5">
+                      BY {service.provider_name || 'ANONYMOUS_ENTITY'}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs" style={{ color: '#9E9E9E' }}>Price</span>
-                  <span className="font-semibold text-sm" style={{ color: '#E91E8C' }}>
-                    {Number(service.price).toLocaleString('en-EG')} EGP
-                  </span>
+              <div className="space-y-4 mb-8 relative z-10 flex-1">
+                <div className="flex justify-between items-center px-4 py-2.5 rounded-lg bg-white/[0.02] border border-white/5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-text-secondary">CREDIT COST</span>
+                  <span className="text-xs font-black text-cyber-pink display-font">{Number(service.price).toLocaleString('en-EG')} EGP</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs" style={{ color: '#9E9E9E' }}>Duration</span>
-                  <span className="text-sm" style={{ color: '#FFFFFF' }}>{service.duration ?? 0} min</span>
+                <div className="flex justify-between items-center px-4 py-2.5 rounded-lg bg-white/[0.02] border border-white/5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-text-secondary">EST_DURATION</span>
+                  <span className="text-[10px] font-bold text-white uppercase tracking-tight">{service.duration ?? 0} MINUTES</span>
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex gap-2 items-center justify-between pt-3" style={{ borderTop: '1px solid #1E1E2C' }}>
+              <div className="flex gap-3 items-center pt-6 border-t border-white/5 relative z-10">
                 <button
                   onClick={(e) => { e.stopPropagation(); handleApprove(service.service_id); }}
                   disabled={acting[service.service_id] !== undefined}
-                  className="flex-1 flex justify-center items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                  style={{
-                    background: acting[service.service_id] === 'approving' ? 'rgba(34,197,94,0.15)' : 'rgba(34,197,94,0.1)',
-                    color: '#4ade80',
-                    border: '1px solid rgba(34,197,94,0.3)',
-                    opacity: acting[service.service_id] !== undefined ? 0.6 : 1,
-                  }}
+                  className="flex-1 flex justify-center items-center gap-2 px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] transition-all bg-green-500/5 text-green-400 border border-green-500/20 hover:bg-green-500/20 hover:border-green-500/40 disabled:opacity-50"
                 >
-                  <Check className="w-3.5 h-3.5" />
-                  {acting[service.service_id] === 'approving' ? '...' : 'Approve'}
+                  <Check className="w-3 h-3" />
+                  {acting[service.service_id] === 'approving' ? '...' : 'AUTHORIZE'}
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleReject(service.service_id); }}
                   disabled={acting[service.service_id] !== undefined}
-                  className="flex-1 flex justify-center items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                  style={{
-                    background: acting[service.service_id] === 'rejecting' ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.1)',
-                    color: '#f87171',
-                    border: '1px solid rgba(239,68,68,0.3)',
-                    opacity: acting[service.service_id] !== undefined ? 0.6 : 1,
-                  }}
+                  className="flex-1 flex justify-center items-center gap-2 px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] transition-all bg-cyber-pink/5 text-cyber-pink border border-cyber-pink/20 hover:bg-cyber-pink/20 hover:border-cyber-pink/40 disabled:opacity-50"
                 >
-                  <X className="w-3.5 h-3.5" />
-                  {acting[service.service_id] === 'rejecting' ? '...' : 'Reject'}
+                  <X className="w-3 h-3" />
+                  {acting[service.service_id] === 'rejecting' ? '...' : 'REJECT'}
                 </button>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       )}

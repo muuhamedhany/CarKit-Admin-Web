@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ChevronLeft, Loader2, Wrench, Tag, Store, Clock, Hash, MapPin, Check, X } from 'lucide-react';
+import { ChevronLeft, Loader2, Wrench, Tag, Store, Clock, Hash, MapPin, Check, X, Shield, Activity } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -71,22 +71,31 @@ const ServiceDetail = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#E91E8C' }} />
+      <div className="flex flex-col items-center justify-center py-40 space-y-4">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full border-2 border-cyber-pink/20 border-t-cyber-pink animate-spin" />
+          <div className="absolute inset-0 bg-cyber-pink/20 blur-xl animate-pulse" />
+        </div>
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-cyber-pink">Scanning Service Payload</span>
       </div>
     );
   }
 
   if (error || !service) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <p style={{ color: '#EF4444' }}>{error || 'Service not found.'}</p>
-        <button
-          onClick={() => navigate('/pending-services')}
-          className="px-4 py-2 rounded-lg font-medium transition-all"
-          style={{ background: '#2A2A3A', color: '#FFFFFF' }}
+      <div className="text-center py-40">
+        <div className="inline-flex p-6 rounded-3xl bg-cyber-pink/5 border border-cyber-pink/10 mb-8">
+          <Shield className="w-12 h-12 text-cyber-pink/40" />
+        </div>
+        <h2 className="text-3xl font-black text-white mb-3 display-font uppercase tracking-tighter">Access Violation</h2>
+        <p className="text-text-secondary text-sm max-w-md mx-auto mb-10 leading-relaxed">
+          {error || 'The requested service node could not be localized within the secure registry.'}
+        </p>
+        <button 
+          onClick={() => navigate('/pending-services')} 
+          className="cyber-button px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20"
         >
-          Back to list
+          Return to Hub
         </button>
       </div>
     );
@@ -94,206 +103,176 @@ const ServiceDetail = () => {
 
   const isPending = String(service.status || '').toLowerCase() === 'pending';
   const isActive = String(service.status || '').toLowerCase() === 'active';
-
   const serviceImages = [service.image_url, service.image_url_2, service.image_url_3].filter(Boolean);
 
   const locationLabel = {
-    'mobile': '🚗 Mobile (at customer)',
-    'in-shop': '🏪 In-Shop',
-    'both': '🔄 Mobile & In-Shop',
+    'mobile': 'Mobile Operative',
+    'in-shop': 'Stationary Hub',
+    'both': 'Hybrid Operations',
   }[service.location_type] || service.location_type || '—';
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate('/pending-services')}
-        className="flex items-center gap-2 text-sm transition-colors hover:text-white"
-        style={{ color: '#9E9E9E' }}
-      >
-        <ChevronLeft className="w-4 h-4" />
-        Back to Pending Services
-      </button>
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-            <Wrench className="w-8 h-8" style={{ color: '#E91E8C' }} />
+    <div className="max-w-6xl mx-auto space-y-10 animate-fade-in pb-20">
+      {/* Navigation & Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-6">
+          <button
+            onClick={() => navigate('/pending-services')}
+            className="group inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-text-secondary hover:text-white transition-all"
+          >
+            <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+            Registry Link
+          </button>
+          
+          <div className="flex items-center gap-6">
+            <div className="w-20 h-20 rounded-3xl bg-black border border-white/5 flex items-center justify-center neo-border-pink relative overflow-hidden group">
+              <div className="absolute inset-0 bg-cyber-pink/5 group-hover:bg-cyber-pink/10 transition-colors" />
+              <Wrench className="w-10 h-10 text-cyber-pink relative z-10 group-hover:scale-110 transition-transform duration-500" />
+            </div>
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-5xl font-black text-white tracking-tighter display-font leading-none uppercase">
+                  {service.name}
+                </h1>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border ${
+                  isPending ? 'bg-cyber-blue/10 text-cyber-blue border-cyber-blue/20' : 
+                  isActive ? 'bg-green-500/10 text-green-400 border-green-500/20' : 
+                  'bg-cyber-pink/10 text-cyber-pink border-cyber-pink/20'
+                }`}>
+                  <div className={`w-1.5 h-1.5 rounded-full bg-current ${isPending ? 'animate-pulse' : ''}`} />
+                  Protocol: {service.status || 'unknown'}
+                </span>
+                <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] font-mono">
+                  NODE_ID: {service.service_id}
+                </span>
+              </div>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>{service.name}</h1>
-            <div className="flex items-center gap-2 mt-2">
-              <span
-                className="px-2.5 py-1 rounded-full text-xs font-medium border"
-                style={{
-                  background: isPending ? 'rgba(59,130,246,0.15)' : isActive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
-                  color: isPending ? '#3B82F6' : isActive ? '#4ade80' : '#f87171',
-                  borderColor: isPending ? 'rgba(59,130,246,0.3)' : isActive ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)',
-                }}
-              >
-                {String(service.status || 'unknown').toUpperCase()}
-              </span>
+        </div>
+
+        <div className="glass-panel px-10 py-6 text-right border-white/5 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-40 h-full bg-cyber-pink/5 skew-x-[-20deg] translate-x-20 group-hover:translate-x-16 transition-transform duration-700" />
+          <div className="relative z-10">
+            <div className="text-[10px] font-black tracking-[0.3em] uppercase text-text-secondary mb-1">Service Value</div>
+            <div className="text-4xl font-black text-cyber-pink display-font">
+              {Number(service.price).toLocaleString('en-EG')} <span className="text-sm">EGP</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {/* Images */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          {/* Visual Array */}
           {serviceImages.length > 0 && (
-            <div className="rounded-xl overflow-hidden p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-              <h2 className="text-lg font-semibold mb-4" style={{ color: '#FFFFFF' }}>Images</h2>
-              <div className="flex gap-4 overflow-x-auto pb-2">
+            <div className="glass-panel p-8 relative overflow-hidden border-white/5">
+              <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30 shadow-[0_0_15px_rgba(0,242,255,0.5)]" />
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font flex items-center gap-3">
+                  <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" /> 
+                  Optical Proofing
+                </h2>
+                <div className="px-3 py-1 rounded-md bg-white/[0.03] border border-white/5 text-[9px] font-bold text-text-secondary uppercase tracking-widest">
+                  {serviceImages.length} Nodes Detected
+                </div>
+              </div>
+              <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar">
                 {serviceImages.map((src, idx) => (
-                  <img key={idx} src={src} alt={`${service.name} view ${idx + 1}`} className="w-48 h-48 object-cover rounded-xl" style={{ border: '1px solid #2A2A3A' }} />
+                  <div key={idx} className="relative group shrink-0">
+                    <div className="absolute inset-0 bg-cyber-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl z-10" />
+                    <img 
+                      src={src} 
+                      alt={`${service.name} view ${idx + 1}`} 
+                      className="w-72 h-72 object-cover rounded-2xl border border-white/10 group-hover:border-cyber-blue/50 transition-all duration-500 shadow-2xl" 
+                    />
+                  </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Description */}
-          <div className="rounded-xl overflow-hidden p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-            <h2 className="text-lg font-semibold mb-4" style={{ color: '#FFFFFF' }}>Description</h2>
-            <p className="whitespace-pre-wrap leading-relaxed" style={{ color: '#9E9E9E' }}>
-              {service.description || 'No description provided.'}
-            </p>
+          {/* Description Node */}
+          <div className="glass-panel p-10 relative overflow-hidden border-white/5">
+            <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-30 shadow-[0_0_15px_rgba(179,136,255,0.5)]" />
+            <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-3">
+              <div className="w-2 h-2 bg-cyber-purple rounded-full shadow-[0_0_10px_rgba(179,136,255,0.8)]" /> 
+              Service Narrative
+            </h2>
+            <div className="relative">
+              <p className="text-base font-medium leading-relaxed text-text-secondary whitespace-pre-wrap">
+                {service.description || 'No descriptive payload detected for this service unit.'}
+              </p>
+            </div>
           </div>
 
-          {/* Available Times */}
+          {/* Timeline Access */}
           {service.available_times && service.available_times.length > 0 && (
-            <div className="rounded-xl overflow-hidden p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-              <h2 className="text-lg font-semibold mb-4" style={{ color: '#FFFFFF' }}>Available Times</h2>
-              <div className="flex flex-wrap gap-2">
-                {service.available_times.map((t, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1 rounded-full text-xs font-medium"
-                    style={{ background: 'rgba(233,30,140,0.15)', color: '#E91E8C', border: '1px solid rgba(233,30,140,0.3)' }}
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
+            <div className="glass-panel p-10 relative overflow-hidden border-white/5">
+               <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30 shadow-[0_0_15px_rgba(0,242,255,0.5)]" />
+               <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-3">
+                 <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" /> 
+                 Operational Windows
+               </h2>
+               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                 {service.available_times.map((t, i) => (
+                   <div
+                     key={i}
+                     className="px-4 py-3 rounded-xl bg-black border border-white/5 text-[10px] font-black text-center text-cyber-blue uppercase tracking-widest hover:border-cyber-blue/40 transition-all cursor-default"
+                   >
+                     {t}
+                   </div>
+                 ))}
+               </div>
             </div>
           )}
         </div>
 
-        <div className="space-y-6">
-          {/* Info Card */}
-          <div className="rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-            <h2 className="text-lg font-semibold mb-6" style={{ color: '#FFFFFF' }}>Service Details</h2>
-            <div className="space-y-5">
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <Tag className="w-5 h-5" style={{ color: '#E91E8C' }} />
-                </div>
-                <div>
-                  <p className="text-xs font-medium" style={{ color: '#6B6B80' }}>Price</p>
-                  <p className="font-semibold" style={{ color: '#FFFFFF' }}>{Number(service.price).toLocaleString('en-EG')} EGP</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <Clock className="w-5 h-5" style={{ color: '#6366F1' }} />
-                </div>
-                <div>
-                  <p className="text-xs font-medium" style={{ color: '#6B6B80' }}>Duration</p>
-                  <p className="font-semibold" style={{ color: '#FFFFFF' }}>{service.duration ?? 0} minutes</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <Store className="w-5 h-5" style={{ color: '#F59E0B' }} />
-                </div>
-                <div>
-                  <p className="text-xs font-medium" style={{ color: '#6B6B80' }}>Provider</p>
-                  <p className="font-semibold" style={{ color: '#FFFFFF' }}>{service.provider_name || 'Unknown'}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <MapPin className="w-5 h-5" style={{ color: '#10B981' }} />
-                </div>
-                <div>
-                  <p className="text-xs font-medium" style={{ color: '#6B6B80' }}>Location Type</p>
-                  <p className="font-semibold" style={{ color: '#FFFFFF' }}>{locationLabel}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <Hash className="w-5 h-5" style={{ color: '#10B981' }} />
-                </div>
-                <div>
-                  <p className="text-xs font-medium" style={{ color: '#6B6B80' }}>Category</p>
-                  <p className="font-semibold" style={{ color: '#FFFFFF' }}>{service.category_name || 'Uncategorized'}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <Hash className="w-5 h-5" style={{ color: '#EC4899' }} />
-                </div>
-                <div>
-                  <p className="text-xs font-medium" style={{ color: '#6B6B80' }}>Service ID</p>
-                  <p className="font-mono text-sm mt-1" style={{ color: '#9E9E9E' }}>{service.service_id}</p>
-                </div>
-              </div>
-
+        <div className="space-y-8">
+          {/* Metadata Controller */}
+          <div className="glass-panel p-8 relative overflow-hidden border-white/5">
+            <div className="absolute top-0 left-0 w-1 h-full bg-cyber-pink opacity-30 shadow-[0_0_15px_rgba(255,0,128,0.5)]" />
+            <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-10">Diagnostic Metrics</h2>
+            
+            <div className="space-y-8">
+              <InfoRow label="Protocol Cost" value={`${Number(service.price).toLocaleString()} EGP`} icon={Tag} accent="var(--cyber-pink)" />
+              <InfoRow label="Execution Time" value={`${service.duration ?? 0} Minutes`} icon={Clock} accent="var(--cyber-blue)" />
+              <InfoRow label="Service Source" value={service.provider_name || 'Anonymous'} icon={Store} accent="var(--cyber-purple)" />
+              <InfoRow label="Ops Vector" value={locationLabel} icon={MapPin} accent="var(--cyber-blue)" />
+              <InfoRow label="System Class" value={service.category_name || 'General'} icon={Hash} accent="var(--cyber-pink)" />
               {service.created_at && (
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                    <Clock className="w-5 h-5" style={{ color: '#8B5CF6' }} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium" style={{ color: '#6B6B80' }}>Created</p>
-                    <p className="text-sm mt-1" style={{ color: '#9E9E9E' }}>
-                      {new Date(service.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
+                <InfoRow label="Initial Uplink" value={new Date(service.created_at).toLocaleDateString()} icon={Activity} accent="var(--cyber-purple)" />
               )}
             </div>
           </div>
 
-          {/* Action Card — only shown when pending */}
+          {/* Decision Center */}
           {isPending && (
-            <div className="rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-              <h2 className="text-lg font-semibold mb-4" style={{ color: '#FFFFFF' }}>Review Decision</h2>
-              <div className="flex flex-col gap-3">
+            <div className="glass-panel p-10 relative overflow-hidden border-cyber-pink/20 bg-cyber-pink/[0.02]">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber-pink to-transparent opacity-40 shadow-[0_0_20px_rgba(255,0,128,0.5)]" />
+              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-8 text-center">Executive Override</h2>
+              <div className="space-y-4">
                 <button
                   onClick={handleApprove}
                   disabled={actionLoading !== null}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all"
-                  style={{
-                    background: actionLoading === 'approving' ? '#22C55E30' : '#22C55E',
-                    color: '#FFFFFF',
-                    opacity: actionLoading !== null ? 0.6 : 1,
-                  }}
+                  className="cyber-button w-full flex items-center justify-center gap-3 px-8 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20 hover:border-green-500 transition-all active:scale-95 group"
                 >
-                  <Check className="w-5 h-5" />
-                  {actionLoading === 'approving' ? 'Approving...' : 'Approve Service'}
+                  <Check className="w-5 h-5 group-hover:scale-125 transition-transform" />
+                  {actionLoading === 'approving' ? 'Authorizing...' : 'Authorize Service'}
                 </button>
                 <button
                   onClick={handleReject}
                   disabled={actionLoading !== null}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all"
-                  style={{
-                    background: actionLoading === 'rejecting' ? '#EF444430' : 'transparent',
-                    color: actionLoading === 'rejecting' ? '#EF4444' : '#f87171',
-                    border: '1px solid #EF4444',
-                    opacity: actionLoading !== null ? 0.6 : 1,
-                  }}
+                  className="cyber-button w-full flex items-center justify-center gap-3 px-8 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] bg-cyber-pink/5 border-cyber-pink/20 text-cyber-pink hover:bg-cyber-pink/10 hover:border-cyber-pink transition-all active:scale-95 group"
                 >
-                  <X className="w-5 h-5" />
-                  {actionLoading === 'rejecting' ? 'Rejecting...' : 'Reject Service'}
+                  <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                  {actionLoading === 'rejecting' ? 'Purging...' : 'Decommission'}
                 </button>
               </div>
+              <p className="text-[9px] font-bold text-text-secondary/40 text-center uppercase tracking-[0.2em] mt-8">
+                Warning: Decision is immutable once committed to main chain.
+              </p>
             </div>
           )}
         </div>
@@ -301,5 +280,21 @@ const ServiceDetail = () => {
     </div>
   );
 };
+
+const InfoRow = ({ label, value, icon: Icon, accent }) => (
+  <div className="group/row flex items-center gap-5">
+    <div className="w-12 h-12 rounded-2xl bg-black border border-white/5 flex items-center justify-center transition-all group-hover/row:border-current group-hover/row:scale-110 duration-500" style={{ color: accent }}>
+      <Icon className="w-6 h-6 opacity-30 group-hover/row:opacity-100 transition-opacity" />
+    </div>
+    <div className="space-y-1">
+      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-text-secondary group-hover/row:text-white transition-colors">
+        {label}
+      </p>
+      <p className="text-sm font-bold text-white tracking-wide">
+        {value}
+      </p>
+    </div>
+  </div>
+);
 
 export default ServiceDetail;

@@ -57,12 +57,14 @@ function App() {
           <Route path="service-providers" element={<ProtectedRoute requiredRole="admin"><ServiceProviders /></ProtectedRoute>} />
           <Route path="service-providers/:id" element={<ProtectedRoute requiredRole="admin"><ProviderDetail /></ProtectedRoute>} />
 
-          {/* Super Admin only routes */}
-          <Route path="users" element={<ProtectedRoute requiredRole="superadmin"><Users /></ProtectedRoute>} />
-          <Route path="orders" element={<ProtectedRoute requiredRole="superadmin"><Orders /></ProtectedRoute>} />
-          <Route path="orders/:id" element={<ProtectedRoute requiredRole="superadmin"><OrderDetail /></ProtectedRoute>} />
-          <Route path="bookings" element={<ProtectedRoute requiredRole="superadmin"><Bookings /></ProtectedRoute>} />
-          <Route path="bookings/:id" element={<ProtectedRoute requiredRole="superadmin"><BookingDetail /></ProtectedRoute>} />
+          {/* Admin routes (Regular Admin + Super Admin) */}
+          <Route path="users" element={<ProtectedRoute requiredRole="admin"><Users /></ProtectedRoute>} />
+          <Route path="orders" element={<ProtectedRoute requiredRole="admin"><Orders /></ProtectedRoute>} />
+          <Route path="orders/:id" element={<ProtectedRoute requiredRole="admin"><OrderDetail /></ProtectedRoute>} />
+          <Route path="bookings" element={<ProtectedRoute requiredRole="admin"><Bookings /></ProtectedRoute>} />
+          <Route path="bookings/:id" element={<ProtectedRoute requiredRole="admin"><BookingDetail /></ProtectedRoute>} />
+
+          {/* Restricted routes (Super Admin ONLY) */}
           <Route path="db-explorer" element={<ProtectedRoute requiredRole="superadmin"><DatabaseExplorer /></ProtectedRoute>} />
         </Route>
       </Routes>

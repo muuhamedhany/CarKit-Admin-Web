@@ -72,96 +72,91 @@ const PendingProducts = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="sm:flex sm:items-center sm:justify-between">
+    <div className="space-y-10 animate-fade-in">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>
-            Pending Product Approvals
+          <h1 className="text-4xl font-black text-white tracking-tighter display-font uppercase">
+            Pending Clearances
           </h1>
-          <p className="mt-1 text-sm" style={{ color: '#9E9E9E' }}>
-            Review and approve new products submitted by vendors.
-            {!loading && <span style={{ color: '#E91E8C' }}> ({products.length} pending)</span>}
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
+            Verification required for incoming vendor payloads.
+            {!loading && <span className="text-cyber-pink ml-2">[{products.length} units queued]</span>}
           </p>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#E91E8C' }} />
+        <div className="flex flex-col items-center justify-center py-32 space-y-4">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full border-2 border-cyber-pink/20 border-t-cyber-pink animate-spin" />
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Syncing Registry</span>
         </div>
       ) : products.length === 0 ? (
-        <div className="rounded-xl p-12 text-center" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <Package className="w-12 h-12 mx-auto mb-3" style={{ color: '#6B6B80' }} />
-          <p style={{ color: '#6B6B80' }}>No pending products.</p>
+        <div className="glass-panel p-20 text-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-cyber-blue/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Package className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-blue/20 transition-colors" />
+          <p className="text-sm font-black uppercase tracking-widest text-text-secondary">All manifests cleared</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
             <div
               key={product.product_id}
-              className="rounded-xl p-5 transition-all duration-200 hover:scale-[1.02] group cursor-pointer flex flex-col h-full"
-              style={{ background: '#12121F', border: '1px solid #2A2A3A' }}
               onClick={() => navigate(`/pending-products/${product.product_id}`)}
+              className="glass-panel p-6 group cursor-pointer relative overflow-hidden flex flex-col h-full border-white/5 hover:border-white/20 transition-all active:scale-[0.98]"
             >
-              <div className="flex items-start justify-between mb-4 flex-1">
-                <div className="flex items-center gap-3">
-                  {product.image_url ? (
+              <div className="absolute top-0 right-0 w-24 h-24 bg-cyber-pink/5 skew-x-[-20deg] translate-x-12 -translate-y-12 group-hover:translate-x-8 transition-transform duration-700" />
+              
+              <div className="flex items-start gap-4 mb-6 relative z-10">
+                {product.image_url ? (
+                  <div className="relative shrink-0">
+                    <div className="absolute inset-0 bg-cyber-pink/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                     <img
                       src={product.image_url}
                       alt={product.name}
-                      className="w-12 h-12 rounded-xl object-cover"
-                      style={{ border: '1px solid #2A2A3A' }}
+                      className="w-14 h-14 rounded-xl object-cover border border-white/10 relative z-10"
                     />
-                  ) : (
-                    <div
-                      className="flex items-center justify-center w-12 h-12 rounded-xl text-sm font-bold"
-                      style={{ background: 'rgba(156,39,176,0.15)', color: '#B388FF' }}
-                    >
-                      {product.name?.charAt(0)?.toUpperCase() || 'P'}
-                    </div>
-                  )}
-                  <div className="min-w-0 pr-2">
-                    <p className="font-semibold text-sm truncate" style={{ color: '#FFFFFF' }} title={product.name}>
-                      {product.name}
-                    </p>
-                    <p className="text-xs mt-0.5 truncate" style={{ color: '#6B6B80' }}>
-                      By {product.vendor_name || 'Unknown Vendor'}
-                    </p>
                   </div>
+                ) : (
+                  <div className="w-14 h-14 rounded-xl bg-black border border-white/10 flex items-center justify-center text-sm font-black text-cyber-pink display-font relative z-10">
+                    {product.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-white truncate display-font uppercase tracking-tight" title={product.name}>
+                    {product.name}
+                  </p>
+                  <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mt-1">
+                    SRC: {product.vendor_name || 'ANONYMOUS'}
+                  </p>
                 </div>
               </div>
 
-              <div className="mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs" style={{ color: '#9E9E9E' }}>Price</span>
-                  <span className="font-semibold text-sm" style={{ color: '#E91E8C' }}>
+              <div className="space-y-3 mb-8 flex-1 relative z-10">
+                <div className="flex justify-between items-center px-3 py-2 rounded-lg bg-white/[0.02] border border-white/5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-text-secondary">Value</span>
+                  <span className="text-xs font-black text-cyber-pink display-font">
                     {Number(product.price).toLocaleString('en-EG')} EGP
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs" style={{ color: '#9E9E9E' }}>Stock</span>
-                  <span className="text-sm" style={{ color: '#FFFFFF' }}>{product.stock ?? 0}</span>
+                <div className="flex justify-between items-center px-3 py-2 rounded-lg bg-white/[0.02] border border-white/5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-text-secondary">Units</span>
+                  <span className="text-xs font-black text-white display-font">{product.stock ?? 0}</span>
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex gap-2 items-center justify-between pt-3" style={{ borderTop: '1px solid #1E1E2C' }}>
+              <div className="flex gap-3 relative z-10">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleApprove(product.product_id);
                   }}
                   disabled={approving[product.product_id] !== undefined}
-                  className="flex-1 flex justify-center items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                  style={{
-                    background: approving[product.product_id] === 'approving' ? 'rgba(34,197,94,0.15)' : 'rgba(34,197,94,0.1)',
-                    color: '#4ade80',
-                    border: '1px solid rgba(34,197,94,0.3)',
-                    opacity: approving[product.product_id] !== undefined ? 0.6 : 1,
-                  }}
+                  className="cyber-button flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20 hover:border-green-500 transition-all group/btn"
                 >
-                  <Check className="w-3.5 h-3.5" />
-                  {approving[product.product_id] === 'approving' ? '...' : 'Approve'}
+                  <Check className="w-3 h-3 group-hover/btn:scale-125 transition-transform" />
+                  {approving[product.product_id] === 'approving' ? '...' : 'Clear'}
                 </button>
                 <button
                   onClick={(e) => {
@@ -169,16 +164,10 @@ const PendingProducts = () => {
                     handleReject(product.product_id);
                   }}
                   disabled={approving[product.product_id] !== undefined}
-                  className="flex-1 flex justify-center items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                  style={{
-                     background: approving[product.product_id] === 'rejecting' ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.1)',
-                     color: '#f87171',
-                     border: '1px solid rgba(239,68,68,0.3)',
-                    opacity: approving[product.product_id] !== undefined ? 0.6 : 1,
-                  }}
+                  className="cyber-button flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-cyber-pink/5 border-cyber-pink/20 text-cyber-pink hover:bg-cyber-pink/10 hover:border-cyber-pink transition-all group/btn"
                 >
-                  <X className="w-3.5 h-3.5" />
-                  {approving[product.product_id] === 'rejecting' ? '...' : 'Reject'}
+                  <X className="w-3 h-3 group-hover/btn:rotate-90 transition-transform" />
+                  {approving[product.product_id] === 'rejecting' ? '...' : 'Eject'}
                 </button>
               </div>
             </div>

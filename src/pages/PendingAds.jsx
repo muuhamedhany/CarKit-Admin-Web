@@ -53,115 +53,106 @@ const PendingAds = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="sm:flex sm:items-center sm:justify-between">
+    <div className="space-y-10 animate-fade-in">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>
-            Pending Ad Approvals
+          <h1 className="text-4xl font-black text-white tracking-tighter display-font uppercase">
+            Broadcast Approvals
           </h1>
-          <p className="mt-1 text-sm" style={{ color: '#9E9E9E' }}>
-            Review and approve promotional ads submitted by vendors and providers.
-            {!loading && <span style={{ color: '#E91E8C' }}> ({ads.length} pending)</span>}
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
+            Verification required for promotional data broadcasts.
+            {!loading && <span className="text-cyber-pink ml-2">[{ads.length} streams pending]</span>}
           </p>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#E91E8C' }} />
+        <div className="flex flex-col items-center justify-center py-32 space-y-4">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full border-2 border-cyber-pink/20 border-t-cyber-pink animate-spin" />
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Syncing Streams</span>
         </div>
       ) : ads.length === 0 ? (
-        <div className="rounded-xl p-12 text-center" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <Megaphone className="w-12 h-12 mx-auto mb-3" style={{ color: '#6B6B80' }} />
-          <p style={{ color: '#6B6B80' }}>No pending ads.</p>
+        <div className="glass-panel p-20 text-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-cyber-blue/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Megaphone className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-blue/20 transition-colors" />
+          <p className="text-sm font-black uppercase tracking-widest text-text-secondary">No pending broadcasts</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {ads.map((ad) => (
             <div
               key={ad.ad_id}
-              className="rounded-xl p-5 flex flex-col h-full"
-              style={{ background: '#12121F', border: '1px solid #2A2A3A' }}
+              className="glass-panel p-6 group relative overflow-hidden flex flex-col h-full border-white/5 hover:border-white/20 transition-all"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-cyber-pink/5 skew-x-[-20deg] translate-x-12 -translate-y-12 group-hover:translate-x-8 transition-transform duration-700" />
+              
+              <div className="flex items-start justify-between mb-6 relative z-10">
+                <div className="flex items-center gap-4">
                   {ad.banner_image_url ? (
-                    <img
-                      src={ad.banner_image_url}
-                      alt={ad.title || 'Ad Banner'}
-                      className="w-16 h-12 rounded object-cover"
-                      style={{ border: '1px solid #2A2A3A' }}
-                    />
+                    <div className="relative shrink-0">
+                      <div className="absolute inset-0 bg-cyber-pink/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <img
+                        src={ad.banner_image_url}
+                        alt={ad.title || 'Ad Banner'}
+                        className="w-20 h-14 rounded-lg object-cover border border-white/10 relative z-10"
+                      />
+                    </div>
                   ) : (
-                    <div
-                      className="flex items-center justify-center w-16 h-12 rounded text-sm font-bold"
-                      style={{ background: 'rgba(156,39,176,0.15)', color: '#B388FF' }}
-                    >
-                      AD
+                    <div className="w-20 h-14 rounded-lg bg-black border border-white/10 flex items-center justify-center text-xs font-black text-cyber-pink display-font relative z-10 uppercase">
+                      NO_IMG
                     </div>
                   )}
                   <div className="min-w-0 pr-2">
-                    <p className="font-semibold text-sm truncate" style={{ color: '#FFFFFF' }} title={ad.title || 'Untitled Ad'}>
+                    <p className="text-sm font-black text-white truncate display-font uppercase tracking-tight" title={ad.title || 'Untitled Ad'}>
                       {ad.title || 'Untitled Ad'}
                     </p>
-                    <p className="text-xs mt-0.5 truncate" style={{ color: '#6B6B80' }}>
-                      By: {ad.advertiser_name || 'Unknown'} ({ad.advertiser_type})
+                    <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mt-1">
+                      SRC: {ad.advertiser_name || 'ANONYMOUS'}
                     </p>
                   </div>
                 </div>
                 <Link
                   to={`/pending-ads/${ad.ad_id}`}
-                  className="p-2 rounded-lg transition-colors"
-                  style={{ color: '#6B6B80', background: 'rgba(255,255,255,0.05)' }}
+                  className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 text-text-secondary hover:text-white hover:border-white/20 transition-all active:scale-90"
                 >
                   <Eye className="w-4 h-4" />
                 </Link>
               </div>
 
-              <div className="mb-4 flex-1">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs" style={{ color: '#9E9E9E' }}>Duration</span>
-                  <span className="font-semibold text-sm" style={{ color: '#FFFFFF' }}>
-                    {ad.duration_days} Days
+              <div className="space-y-3 mb-8 flex-1 relative z-10">
+                <div className="flex justify-between items-center px-3 py-2 rounded-lg bg-white/[0.02] border border-white/5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-text-secondary">Horizon</span>
+                  <span className="text-xs font-black text-white display-font uppercase">
+                    {ad.duration_days} Solar Cycles
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs" style={{ color: '#9E9E9E' }}>Submitted On</span>
-                  <span className="text-sm" style={{ color: '#9E9E9E' }}>
+                <div className="flex justify-between items-center px-3 py-2 rounded-lg bg-white/[0.02] border border-white/5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-text-secondary">Timestamp</span>
+                  <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">
                     {new Date(ad.created_at).toLocaleDateString()}
                   </span>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2 items-center justify-between pt-3" style={{ borderTop: '1px solid #1E1E2C' }}>
+              <div className="flex gap-3 relative z-10">
                 <button
                   onClick={() => handleUpdateStatus(ad.ad_id, 'active')}
                   disabled={approving[ad.ad_id] !== undefined}
-                  className="flex-1 flex justify-center items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                  style={{
-                    background: approving[ad.ad_id] === 'active' ? 'rgba(34,197,94,0.15)' : 'rgba(34,197,94,0.1)',
-                    color: '#4ade80',
-                    border: '1px solid rgba(34,197,94,0.3)',
-                    opacity: approving[ad.ad_id] !== undefined ? 0.6 : 1,
-                  }}
+                  className="cyber-button flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20 hover:border-green-500 transition-all group/btn"
                 >
-                  <Check className="w-3.5 h-3.5" />
-                  {approving[ad.ad_id] === 'active' ? '...' : 'Approve'}
+                  <Check className="w-3 h-3 group-hover/btn:scale-125 transition-transform" />
+                  {approving[ad.ad_id] === 'active' ? '...' : 'Clear'}
                 </button>
                 <button
                   onClick={() => handleUpdateStatus(ad.ad_id, 'rejected')}
                   disabled={approving[ad.ad_id] !== undefined}
-                  className="flex-1 flex justify-center items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                  style={{
-                     background: approving[ad.ad_id] === 'rejected' ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.1)',
-                     color: '#f87171',
-                     border: '1px solid rgba(239,68,68,0.3)',
-                    opacity: approving[ad.ad_id] !== undefined ? 0.6 : 1,
-                  }}
+                  className="cyber-button flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-cyber-pink/5 border-cyber-pink/20 text-cyber-pink hover:bg-cyber-pink/10 hover:border-cyber-pink transition-all group/btn"
                 >
-                  <X className="w-3.5 h-3.5" />
-                  {approving[ad.ad_id] === 'rejected' ? '...' : 'Reject'}
+                  <X className="w-3 h-3 group-hover/btn:rotate-90 transition-transform" />
+                  {approving[ad.ad_id] === 'rejected' ? '...' : 'Eject'}
                 </button>
               </div>
             </div>

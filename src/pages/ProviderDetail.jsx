@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowLeft, FileText, Eye, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, FileText, Eye, CheckCircle, XCircle, Loader2, User, Shield, Activity, Fingerprint, Zap } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -46,9 +46,9 @@ const ProviderDetail = () => {
 
   const getStatusStyle = (status) => {
     switch (status) {
-      case 'approved': return { bg: 'rgba(34,197,94,0.12)', color: '#4ade80', border: 'rgba(34,197,94,0.25)' };
-      case 'rejected': return { bg: 'rgba(239,68,68,0.12)', color: '#f87171', border: 'rgba(239,68,68,0.25)' };
-      default: return { bg: 'rgba(234,179,8,0.12)', color: '#facc15', border: 'rgba(234,179,8,0.25)' };
+      case 'approved': return { bg: 'bg-green-500/10', color: 'text-green-400', border: 'border-green-500/20' };
+      case 'rejected': return { bg: 'bg-cyber-pink/10', color: 'text-cyber-pink', border: 'border-cyber-pink/20' };
+      default: return { bg: 'bg-cyber-blue/10', color: 'text-cyber-blue', border: 'border-cyber-blue/20' };
     }
   };
 
@@ -60,17 +60,32 @@ const ProviderDetail = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#E91E8C' }} />
+      <div className="flex flex-col items-center justify-center py-40 space-y-4">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full border-2 border-cyber-blue/20 border-t-cyber-blue animate-spin" />
+          <div className="absolute inset-0 bg-cyber-blue/20 blur-xl animate-pulse" />
+        </div>
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-cyber-blue">Scanning Provider Credentials</span>
       </div>
     );
   }
 
   if (!provider) {
     return (
-      <div className="text-center py-20">
-        <p style={{ color: '#6B6B80' }}>Service provider not found.</p>
-        <button onClick={() => navigate('/service-providers')} className="mt-4 text-sm cursor-pointer" style={{ color: '#E91E8C' }}>← Back to Providers</button>
+      <div className="text-center py-40">
+        <div className="inline-flex p-6 rounded-3xl bg-cyber-pink/5 border border-cyber-pink/10 mb-8">
+          <Shield className="w-12 h-12 text-cyber-pink/40" />
+        </div>
+        <h2 className="text-3xl font-black text-white mb-3 display-font uppercase tracking-tighter">Node Not Found</h2>
+        <p className="text-text-secondary text-sm max-w-md mx-auto mb-10 leading-relaxed">
+          The service provider entity you are attempting to access does not exist in the current registry shard.
+        </p>
+        <button 
+          onClick={() => navigate('/service-providers')} 
+          className="cyber-button px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20"
+        >
+          Return to Registry
+        </button>
       </div>
     );
   }
@@ -84,89 +99,107 @@ const ProviderDetail = () => {
   ].filter(d => d.url);
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      {/* Back button */}
-      <button
-        onClick={() => navigate('/service-providers')}
-        className="inline-flex items-center gap-2 text-sm transition-colors duration-200 cursor-pointer"
-        style={{ color: '#9E9E9E' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#E91E8C')}
-        onMouseLeave={(e) => (e.currentTarget.style.color = '#9E9E9E')}
-      >
-        <ArrowLeft className="w-4 h-4" /> Back to Service Providers
-      </button>
-
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <div
-          className="flex items-center justify-center w-14 h-14 rounded-2xl text-lg font-bold"
-          style={{ background: 'rgba(233,30,140,0.15)', color: '#FF69B4' }}
-        >
-          {provider.name?.charAt(0)?.toUpperCase() || 'P'}
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>Review Provider: {provider.name}</h1>
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium mt-1"
-            style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}
+    <div className="max-w-6xl mx-auto space-y-10 animate-fade-in pb-20">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-6">
+          <button
+            onClick={() => navigate('/service-providers')}
+            className="group inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-text-secondary hover:text-white transition-all"
           >
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </span>
-        </div>
-      </div>
-
-      {/* Content grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Provider Information */}
-        <div className="rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <h2 className="text-base font-semibold mb-5" style={{ color: '#FFFFFF' }}>Provider Information</h2>
-          <div className="space-y-4">
-            {[
-              { label: 'Provider Name', value: provider.name },
-              { label: 'Contact Info', value: provider.contact_info || '—' },
-              { label: 'Provider ID', value: `#${provider.provider_id}` },
-            ].map((item) => (
-              <div key={item.label}>
-                <p className="text-xs font-medium uppercase tracking-wider mb-1" style={{ color: '#6B6B80' }}>{item.label}</p>
-                <p className="text-sm" style={{ color: '#FFFFFF' }}>{item.value}</p>
+            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+            Registry Link
+          </button>
+          
+          <div className="flex items-center gap-6">
+            <div className="w-20 h-20 rounded-3xl bg-black border border-white/5 flex items-center justify-center neo-border-blue relative overflow-hidden group">
+              <div className="absolute inset-0 bg-cyber-blue/5 group-hover:bg-cyber-blue/10 transition-colors" />
+              <User className="w-10 h-10 text-cyber-blue relative z-10 group-hover:scale-110 transition-transform duration-500" />
+            </div>
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-5xl font-black text-white tracking-tighter display-font leading-none uppercase">
+                  {provider.name}
+                </h1>
               </div>
-            ))}
+              <div className="flex items-center gap-4">
+                <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border ${s.bg} ${s.color} ${s.border}`}>
+                  <div className={`w-1.5 h-1.5 rounded-full bg-current ${status === 'pending' ? 'animate-pulse' : ''}`} />
+                  Verification: {status}
+                </span>
+                <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] font-mono">
+                  PROVIDER_ID: #{provider.provider_id}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Submitted Documents */}
-        <div className="rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-          <h2 className="text-base font-semibold mb-5" style={{ color: '#FFFFFF' }}>Submitted Documents</h2>
+        <div className="glass-panel px-10 py-6 border-white/5 relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30 shadow-[0_0_15px_rgba(0,242,255,0.5)]" />
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="p-3 rounded-xl bg-cyber-blue/10 border border-cyber-blue/20">
+              <Zap className="w-6 h-6 text-cyber-blue" />
+            </div>
+            <div>
+              <div className="text-[9px] font-black tracking-[0.3em] uppercase text-text-secondary mb-1">Response Rating</div>
+              <div className="text-xl font-black text-white uppercase display-font tracking-tight">Elite Tier</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Provider Information */}
+        <div className="glass-panel p-10 relative overflow-hidden border-white/5">
+          <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-30 shadow-[0_0_15px_rgba(179,136,255,0.5)]" />
+          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-10 flex items-center gap-3">
+            <div className="w-2 h-2 bg-cyber-purple rounded-full shadow-[0_0_10px_rgba(179,136,255,0.8)]" /> 
+            Personnel Profile
+          </h2>
+          <div className="space-y-8">
+            <InfoRow label="Legal Name" value={provider.name} accent="var(--cyber-purple)" />
+            <InfoRow label="Direct Link" value={provider.contact_info || 'Protocol Offline'} accent="var(--cyber-blue)" />
+            <InfoRow label="System ID" value={`#${provider.provider_id}`} accent="var(--cyber-pink)" />
+            <InfoRow label="Registration Link" value={provider.created_at ? new Date(provider.created_at).toLocaleDateString() : '—'} accent="var(--cyber-purple)" />
+          </div>
+        </div>
+
+        {/* Verification Artifacts */}
+        <div className="glass-panel p-10 relative overflow-hidden border-white/5">
+          <div className="absolute top-0 left-0 w-1 h-full bg-cyber-pink opacity-30 shadow-[0_0_15px_rgba(255,0,128,0.5)]" />
+          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-10 flex items-center gap-3">
+            <div className="w-2 h-2 bg-cyber-pink rounded-full shadow-[0_0_10px_rgba(255,0,128,0.8)]" /> 
+            Credential Artifacts
+          </h2>
           {documents.length === 0 ? (
-            <div className="text-center py-8">
-              <FileText className="w-10 h-10 mx-auto mb-2" style={{ color: '#2A2A3A' }} />
-              <p className="text-sm" style={{ color: '#6B6B80' }}>No documents submitted.</p>
+            <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+              <div className="p-5 rounded-3xl bg-white/[0.02] border border-white/5">
+                <Fingerprint className="w-10 h-10 text-white/10" />
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">No credential payloads detected</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {documents.map((doc, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between rounded-xl p-4"
-                  style={{ background: '#1E1E2C', border: '1px solid #2A2A3A' }}
+                  className="flex items-center justify-between rounded-2xl p-5 bg-black/40 border border-white/5 hover:border-cyber-pink/40 transition-all group"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-lg" style={{ background: 'rgba(233,30,140,0.1)' }}>
-                      <FileText className="w-5 h-5" style={{ color: '#FF69B4' }} />
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-cyber-pink/5 border border-cyber-pink/10 flex items-center justify-center group-hover:bg-cyber-pink/10 transition-colors">
+                      <FileText className="w-6 h-6 text-cyber-pink" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium" style={{ color: '#FFFFFF' }}>{doc.label}</p>
-                      <p className="text-xs mt-0.5" style={{ color: '#6B6B80' }}>{getDocName(doc.url)}</p>
+                      <p className="text-xs font-black text-white uppercase tracking-wider">{doc.label}</p>
+                      <p className="text-[9px] font-bold text-text-secondary mt-1 font-mono uppercase truncate max-w-[150px]">{getDocName(doc.url)}</p>
                     </div>
                   </div>
                   <a
                     href={getDocUrl(doc.url)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium transition-all duration-200"
-                    style={{ background: 'rgba(233,30,140,0.15)', color: '#FF69B4' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(233,30,140,0.25)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(233,30,140,0.15)'; }}
+                    className="cyber-button px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-cyber-pink/10 border-cyber-pink/20 text-cyber-pink hover:bg-cyber-pink/20 hover:border-cyber-pink transition-all flex items-center gap-2"
                   >
                     <Eye className="w-3.5 h-3.5" /> View
                   </a>
@@ -177,40 +210,53 @@ const ProviderDetail = () => {
         </div>
       </div>
 
-      {/* Final Action */}
-      <div className="rounded-xl p-6" style={{ background: '#12121F', border: '1px solid #2A2A3A' }}>
-        <h2 className="text-base font-semibold mb-5" style={{ color: '#FFFFFF' }}>Final Action</h2>
-        <div className="flex flex-wrap gap-3">
+      {/* Final Action Hub */}
+      <div className="glass-panel p-10 relative overflow-hidden border-white/5">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber-purple to-transparent opacity-30 shadow-[0_0_20px_rgba(179,136,255,0.3)]" />
+        <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-3">
+          <div className="w-2 h-2 bg-cyber-purple rounded-full shadow-[0_0_10px_rgba(179,136,255,0.8)]" /> 
+          Verification Protocol
+        </h2>
+        <div className="flex flex-wrap gap-4">
           {status !== 'approved' && (
             <button
               onClick={() => updateStatus('approved')}
               disabled={updating}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer"
-              style={{ background: 'rgba(34,197,94,0.15)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(34,197,94,0.25)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(34,197,94,0.15)'; }}
+              className="cyber-button px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20 hover:border-green-500 transition-all flex items-center gap-3 active:scale-95 group"
             >
-              <CheckCircle className="w-4 h-4" />
-              {updating ? 'Updating...' : 'Approve Provider'}
+              <CheckCircle className="w-5 h-5 group-hover:scale-125 transition-transform" />
+              {updating ? 'Processing...' : 'Authorize Personnel'}
             </button>
           )}
           {status !== 'rejected' && (
             <button
               onClick={() => updateStatus('rejected')}
               disabled={updating}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer"
-              style={{ background: 'rgba(239,68,68,0.15)', color: '#f87171', border: '1px solid rgba(239,68,68,0.3)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.25)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; }}
+              className="cyber-button px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] bg-cyber-pink/5 border-cyber-pink/20 text-cyber-pink hover:bg-cyber-pink/10 hover:border-cyber-pink transition-all flex items-center gap-3 active:scale-95 group"
             >
-              <XCircle className="w-4 h-4" />
-              {updating ? 'Updating...' : 'Reject Provider'}
+              <XCircle className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+              {updating ? 'Processing...' : 'Decommission Node'}
             </button>
           )}
         </div>
+        <p className="text-[9px] font-bold text-text-secondary/40 uppercase tracking-[0.2em] mt-8">
+          Authorized personal only. All verification protocols are logged in the secure audit chain.
+        </p>
       </div>
     </div>
   );
 };
+
+const InfoRow = ({ label, value, accent }) => (
+  <div className="group/row">
+    <p className="text-[9px] font-black uppercase tracking-[0.3em] mb-2 text-text-secondary group-hover/row:text-white transition-colors">{label}</p>
+    <div className="flex items-center gap-4">
+      <div className="w-1.5 h-10 rounded-full bg-white/5 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1/2 bg-current opacity-40 group-hover/row:h-full transition-all duration-500" style={{ color: accent }} />
+      </div>
+      <p className="text-sm font-bold text-white tracking-wide">{value}</p>
+    </div>
+  </div>
+);
 
 export default ProviderDetail;
