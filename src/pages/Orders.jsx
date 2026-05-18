@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { ArrowRight, CircleDashed, Clock3, Loader2, Package, Search, ShoppingBag } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const STATUS_OPTIONS = ['all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+const STATUS_OPTIONS = ['all', 'pending', 'processing', 'ready_for_pickup', 'in_transit', 'delivered', 'cancelled'];
 
 const Orders = () => {
   const { token } = useAuth();
@@ -71,7 +71,8 @@ const Orders = () => {
       case 'delivered':
         return { bg: 'rgba(34,197,94,0.1)', color: '#4ade80', border: 'rgba(34,197,94,0.2)', glow: '0 0 10px rgba(34,197,94,0.2)' };
       case 'processing':
-      case 'shipped':
+      case 'ready_for_pickup':
+      case 'in_transit':
         return { bg: 'rgba(0,212,255,0.1)', color: '#00D4FF', border: 'rgba(0,212,255,0.2)', glow: '0 0 10px rgba(0,212,255,0.2)' };
       case 'cancelled':
         return { bg: 'rgba(255,0,128,0.1)', color: '#FF0080', border: 'rgba(255,0,128,0.2)', glow: '0 0 10px rgba(255,0,128,0.2)' };

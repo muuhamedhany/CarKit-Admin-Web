@@ -20,6 +20,9 @@ import OrderDetail from './pages/OrderDetail';
 import Bookings from './pages/Bookings';
 import BookingDetail from './pages/BookingDetail';
 import DatabaseExplorer from './pages/DatabaseExplorer';
+import Drivers from './pages/Drivers';
+import DriverDetail from './pages/DriverDetail';
+import EmergencyMonitor from './pages/EmergencyMonitor';
 import './pages/Login.css';
 
 const IndexRedirect = () => {
@@ -61,6 +64,9 @@ function App() {
           <Route path="orders/:id" element={<ProtectedRoute requiredRole="admin"><OrderDetail /></ProtectedRoute>} />
           <Route path="bookings" element={<ProtectedRoute requiredRole="admin"><Bookings /></ProtectedRoute>} />
           <Route path="bookings/:id" element={<ProtectedRoute requiredRole="admin"><BookingDetail /></ProtectedRoute>} />
+          <Route path="drivers" element={<ProtectedRoute requiredRole="admin"><Drivers /></ProtectedRoute>} />
+          <Route path="drivers/:id" element={<ProtectedRoute requiredRole="admin"><DriverDetail /></ProtectedRoute>} />
+          <Route path="emergency" element={<ProtectedRoute requiredRole="admin"><EmergencyMonitor /></ProtectedRoute>} />
 
           {/* Restricted routes (Super Admin ONLY) */}
           <Route path="db-explorer" element={<ProtectedRoute requiredRole="superadmin"><DatabaseExplorer /></ProtectedRoute>} />

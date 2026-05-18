@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Store, Wrench, Menu, LogOut, PackageCheck, ShoppingBag, CalendarDays, Megaphone, Database } from 'lucide-react';
+import { LayoutDashboard, Store, Wrench, Menu, LogOut, PackageCheck, ShoppingBag, CalendarDays, Megaphone, Database, Truck, Siren } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../assets/carkit-logo.png';
@@ -26,6 +26,8 @@ const Layout = () => {
     { name: 'Service Providers', href: '/service-providers', icon: Wrench },
     { name: 'Orders', href: '/orders', icon: ShoppingBag },
     { name: 'Bookings', href: '/bookings', icon: CalendarDays },
+    { name: 'Drivers', href: '/drivers', icon: Truck },
+    { name: 'Emergency', href: '/emergency', icon: Siren },
     ...(isSuperAdmin
       ? [
           { name: 'DB Explorer', href: '/db-explorer', icon: Database }
