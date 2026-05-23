@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ChevronLeft, Loader2, Package, Tag, Store, Clock, Hash, Check, X } from 'lucide-react';
+import { ChevronLeft, Loader2, Package, Tag, Store, Clock, Hash, Check, X, Car } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -99,6 +99,9 @@ const ProductDetail = () => {
   const isPending = String(product.status || '').toLowerCase() === 'pending';
   const isActive = String(product.status || '').toLowerCase() === 'active';
   const productImages = [product.image_url, product.image_url_2, product.image_url_3].filter(Boolean);
+  const compatibleMakes = Array.isArray(product.compatible_makes) ? product.compatible_makes.filter(Boolean) : [];
+  const compatibleModels = Array.isArray(product.compatible_models) ? product.compatible_models.filter(Boolean) : [];
+  const isUniversalFitment = compatibleMakes.length === 0 && compatibleModels.length === 0;
 
   return (
     <div className="max-w-6xl mx-auto space-y-10 animate-fade-in">
@@ -193,6 +196,29 @@ const ProductDetail = () => {
             </div>
           </div>
 
+          <div className="glass-panel p-8 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30" />
+            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-2">
+              <Car className="w-4 h-4 text-cyber-blue" />
+              Vehicle Fitment
+            </h2>
+
+            {isUniversalFitment ? (
+              <span className="inline-flex items-center px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest bg-green-500/10 text-green-400 border border-green-500/20">
+                Universal
+              </span>
+            ) : (
+              <div className="space-y-6">
+                {compatibleMakes.length > 0 && (
+                  <FitmentBadgeGroup label="Makes" values={compatibleMakes} colorClass="text-cyber-pink border-cyber-pink/25 bg-cyber-pink/10" />
+                )}
+                {compatibleModels.length > 0 && (
+                  <FitmentBadgeGroup label="Models" values={compatibleModels} colorClass="text-cyber-blue border-cyber-blue/25 bg-cyber-blue/10" />
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Action Hub */}
           {isPending && (
             <div className="glass-panel p-8 relative overflow-hidden">
@@ -232,6 +258,22 @@ const MetadataRow = ({ label, value, icon: Icon, accent }) => (
         <Icon className="w-5 h-5 opacity-40 group-hover/row:opacity-100 transition-opacity" />
       </div>
       <p className="text-sm font-bold text-white/80 group-hover/row:text-white transition-colors">{value}</p>
+    </div>
+  </div>
+);
+
+const FitmentBadgeGroup = ({ label, values, colorClass }) => (
+  <div>
+    <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-3 text-text-secondary">{label}</p>
+    <div className="flex flex-wrap gap-2">
+      {values.map((value) => (
+        <span
+          key={value}
+          className={`inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-bold border ${colorClass}`}
+        >
+          {value}
+        </span>
+      ))}
     </div>
   </div>
 );
