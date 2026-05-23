@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
@@ -34,11 +34,16 @@ const IndexRedirect = () => {
 };
 
 function App() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
   return (
     <ThemeProvider>
-      <div className="theme-fab">
-        <ThemeToggle compact />
-      </div>
+      {!isLoginPage && (
+        <div className="theme-fab">
+          <ThemeToggle compact />
+        </div>
+      )}
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
