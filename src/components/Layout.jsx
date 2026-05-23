@@ -36,7 +36,7 @@ const Layout = () => {
   ];
 
   return (
-    <div className="h-screen flex overflow-hidden font-['Space_Grotesk']" style={{ background: 'var(--bg-primary)' }}>
+    <div className="h-dvh flex overflow-hidden font-['Space_Grotesk']" style={{ background: 'var(--bg-primary)' }}>
       {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 z-50 h-screen transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] 
@@ -60,7 +60,6 @@ const Layout = () => {
             <Menu className="w-5 h-5" />
           </button>
         </div>
-
         {/* Navigation */}
         <div className="flex min-h-0 flex-1 flex-col">
           <nav className="flex-1 min-h-0 space-y-2 overflow-y-auto px-4 py-4 custom-scrollbar">

@@ -15,8 +15,8 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0A0A14' }}>
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderColor: '#E91E8C' }}></div>
+      <div className="min-h-dvh flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderColor: 'var(--accent-pink)' }}></div>
       </div>
     );
   }

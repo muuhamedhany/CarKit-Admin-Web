@@ -2,24 +2,65 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cyber-pink: #FF0080;
-  --color-cyber-purple: #7B2CBF;
-  --color-cyber-blue: #00D4FF;
-  --color-deep-space: #0A0A0F;
-  --color-surface: #12121E;
+  --color-cyber-pink: #CD42A8;
+  --color-cyber-purple: #5923A0;
+  --color-cyber-blue: #2979FF;
+  --color-deep-space: #050505;
+  --color-surface: #12121A;
 }
 
 :root {
-  --bg-primary: #0A0A0F;
-  --bg-secondary: #12121E;
-  --accent-pink: #FF0080;
-  --accent-purple: #7B2CBF;
-  --accent-blue: #00D4FF;
-  --text-primary: #F8F9FA;
-  --text-secondary: #A0A0B8;
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  --glow-pink: 0 0 15px rgba(255, 0, 128, 0.3);
-  --glow-purple: 0 0 15px rgba(123, 44, 191, 0.3);
+  --theme-overlay: rgba(18, 18, 30, 0.4);
+  --theme-grid-line: rgba(255, 255, 255, 0.03);
+  --theme-scanline-a: rgba(18, 16, 16, 0);
+  --theme-scanline-b: rgba(0, 0, 0, 0.05);
+  --theme-scan-r: rgba(205, 66, 168, 0.01);
+  --theme-scan-g: rgba(89, 35, 160, 0.005);
+  --theme-scan-b: rgba(41, 121, 255, 0.01);
+
+  --bg-primary: #050505;
+  --bg-secondary: #0D0D0F;
+  --accent-pink: #CD42A8;
+  --accent-purple: #5923A0;
+  --accent-blue: #2979FF;
+  --text-primary: #F8F7FF;
+  --text-secondary: #AA9DBB;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --glow-pink: 0 0 15px rgba(205, 66, 168, 0.3);
+  --glow-purple: 0 0 15px rgba(89, 35, 160, 0.3);
+
+  --theme-toggle-bg: rgba(20, 20, 25, 0.6);
+  --theme-toggle-border: rgba(255, 255, 255, 0.08);
+  --theme-toggle-text: #F8F7FF;
+  --theme-toggle-hover: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='light'] {
+  --color-white: #172033;
+  --color-black: #FFFFFF;
+
+  --theme-overlay: rgba(255, 255, 255, 0.8);
+  --theme-grid-line: rgba(100, 116, 139, 0.1);
+  --theme-scanline-a: rgba(255, 255, 255, 0);
+  --theme-scanline-b: rgba(23, 32, 51, 0.03);
+  --theme-scan-r: rgba(184, 50, 145, 0.01);
+  --theme-scan-g: rgba(84, 32, 153, 0.005);
+  --theme-scan-b: rgba(2, 132, 199, 0.01);
+
+  --bg-primary: #F6F7FB;
+  --bg-secondary: #FFFFFF;
+  --accent-pink: #B83291;
+  --accent-purple: #542099;
+  --accent-blue: #0284C7;
+  --text-primary: #172033;
+  --text-secondary: #4B5870;
+  --border-subtle: #DDE3EE;
+  --glow-pink: 0 0 0 rgba(184, 50, 145, 0);
+  --glow-purple: 0 0 0 rgba(84, 32, 153, 0);
+  --theme-toggle-bg: rgba(255, 255, 255, 0.84);
+  --theme-toggle-border: #DDE3EE;
+  --theme-toggle-text: #172033;
+  --theme-toggle-hover: rgba(23, 32, 51, 0.06);
 }
 
 body {
@@ -31,14 +72,19 @@ body {
   color: var(--text-primary);
   height: 100vh;
   overflow: hidden;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 50%, rgba(123, 44, 191, 0.05) 0%, transparent 50%),
-    linear-gradient(rgba(18, 18, 30, 0.4) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(18, 18, 30, 0.4) 1px, transparent 1px);
+    linear-gradient(var(--theme-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--theme-grid-line) 1px, transparent 1px);
   background-size: 100% 100%, 30px 30px, 30px 30px;
 }
 
-h1, h2, h3, h4, h5, .display-font {
+h1,
+h2,
+h3,
+h4,
+h5,
+.display-font {
   font-family: 'Outfit', sans-serif;
   letter-spacing: -0.02em;
 }
@@ -51,7 +97,7 @@ body::after {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.01), rgba(0, 255, 0, 0.005), rgba(0, 0, 255, 0.01));
+  background: linear-gradient(var(--theme-scanline-a) 50%, var(--theme-scanline-b) 50%), linear-gradient(90deg, var(--theme-scan-r), var(--theme-scan-g), var(--theme-scan-b));
   background-size: 100% 4px, 3px 100%;
   pointer-events: none;
   z-index: 100;
@@ -60,7 +106,7 @@ body::after {
 
 /* High-Craft Utilities */
 .glass-panel {
-  background: rgba(18, 18, 30, 0.7);
+  background: var(--theme-toggle-bg);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
@@ -152,6 +198,7 @@ body::after {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -160,4 +207,38 @@ body::after {
 
 .animate-fade-in {
   animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.theme-toggle {
+  min-height: 36px;
+  border: 1px solid var(--theme-toggle-border);
+  border-radius: 99px;
+  padding: 0.45rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--theme-toggle-bg);
+  color: var(--theme-toggle-text);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background-color 160ms ease-out, color 160ms ease-out, border-color 160ms ease-out;
+}
+
+.theme-toggle:hover {
+  background: var(--theme-toggle-hover);
+}
+
+.theme-toggle-compact {
+  padding: 0.42rem;
+  min-height: 34px;
+  gap: 0;
+}
+
+.theme-fab {
+  position: fixed;
+  right: max(25px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 120;
 }
