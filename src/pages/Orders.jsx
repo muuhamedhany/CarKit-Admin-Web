@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { ArrowRight, CircleDashed, Clock3, Loader2, Package, Search, ShoppingBag } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const STATUS_OPTIONS = ['all', 'pending', 'processing', 'ready_for_pickup', 'in_transit', 'delivered', 'cancelled'];
+const STATUS_OPTIONS = ['all', 'pending', 'processing', 'ready_for_pickup', 'in_transit', 'delivered', 'cancelled', 'return_requested', 'returned'];
 
 const Orders = () => {
   const { token } = useAuth();
@@ -66,6 +66,7 @@ const Orders = () => {
       day: 'numeric',
     });
   };
+
   const getStatusStyle = (status) => {
     switch (status) {
       case 'delivered':
@@ -76,6 +77,10 @@ const Orders = () => {
         return { bg: 'rgba(0,212,255,0.1)', color: '#00D4FF', border: 'rgba(0,212,255,0.2)', glow: '0 0 10px rgba(0,212,255,0.2)' };
       case 'cancelled':
         return { bg: 'rgba(255,0,128,0.1)', color: '#FF0080', border: 'rgba(255,0,128,0.2)', glow: '0 0 10px rgba(255,0,128,0.2)' };
+      case 'return_requested':
+        return { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b', border: 'rgba(245,158,11,0.2)', glow: '0 0 10px rgba(245,158,11,0.2)' };
+      case 'returned':
+        return { bg: 'rgba(156,163,175,0.1)', color: '#9ca3af', border: 'rgba(156,163,175,0.2)', glow: '0 0 10px rgba(156,163,175,0.2)' };
       default:
         return { bg: 'rgba(180,92,255,0.1)', color: '#B45CFF', border: 'rgba(180,92,255,0.2)', glow: '0 0 10px rgba(180,92,255,0.2)' };
     }

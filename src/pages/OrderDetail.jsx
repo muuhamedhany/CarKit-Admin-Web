@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { ArrowLeft, CheckCircle2, CircleDashed, Clock3, Loader2, Mail, MapPin, Package, ShoppingBag, Truck, XCircle } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const STATUS_OPTIONS = ['pending', 'processing', 'ready_for_pickup', 'in_transit', 'delivered', 'cancelled'];
+const STATUS_OPTIONS = ['pending', 'processing', 'ready_for_pickup', 'in_transit', 'delivered', 'cancelled', 'return_requested', 'returned'];
 
 const formatDate = (dateString) => {
   if (!dateString) return '—';
@@ -83,6 +83,10 @@ const OrderDetail = () => {
         return { bg: 'rgba(0, 212, 255, 0.1)', color: '#00D4FF', glow: '0 0 15px rgba(0, 212, 255, 0.3)', border: 'rgba(0, 212, 255, 0.2)' };
       case 'cancelled':
         return { bg: 'rgba(255, 0, 128, 0.1)', color: '#FF0080', glow: '0 0 15px rgba(255, 0, 128, 0.3)', border: 'rgba(255, 0, 128, 0.2)' };
+      case 'return_requested':
+        return { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b', glow: '0 0 15px rgba(245,158,11,0.3)', border: 'rgba(245,158,11,0.2)' };
+      case 'returned':
+        return { bg: 'rgba(156,163,175,0.1)', color: '#9ca3af', glow: '0 0 15px rgba(156,163,175,0.3)', border: 'rgba(156,163,175,0.2)' };
       default:
         return { bg: 'rgba(123, 44, 191, 0.1)', color: '#7B2CBF', glow: '0 0 15px rgba(123, 44, 191, 0.3)', border: 'rgba(123, 44, 191, 0.2)' };
     }
@@ -236,7 +240,6 @@ const OrderDetail = () => {
             {STATUS_OPTIONS.map((nextStatus) => {
               const active = nextStatus === status;
               const isDanger = nextStatus === 'cancelled';
-              const nextStyle = getStatusStyle(nextStatus);
               
               return (
                 <button
@@ -286,6 +289,5 @@ const InfoRow = ({ label, value, icon: Icon, accent }) => (
     </div>
   </div>
 );
-
 
 export default OrderDetail;
