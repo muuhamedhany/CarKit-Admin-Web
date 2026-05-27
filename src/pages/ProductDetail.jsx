@@ -219,6 +219,37 @@ const ProductDetail = () => {
             )}
           </div>
 
+          {/* Purchase Clearance */}
+          <div className="glass-panel p-8 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-cyber-pink opacity-30" />
+            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font mb-6 flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-cyber-pink rounded-full" /> Purchase Clearance
+            </h2>
+            {product.receipt_url ? (
+              <div className="space-y-4">
+                <div className="relative group overflow-hidden rounded-xl border border-white/5 bg-black/40 p-2">
+                  <img 
+                    src={product.receipt_url} 
+                    alt="Product Receipt" 
+                    className="w-full h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <a 
+                  href={product.receipt_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="cyber-button w-full flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-cyber-pink transition-all"
+                >
+                  View Full Receipt
+                </a>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-white/5 bg-black/40 p-6 text-center">
+                <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">No Receipt Payload Uploaded</p>
+              </div>
+            )}
+          </div>
+
           {/* Action Hub */}
           {isPending && (
             <div className="glass-panel p-8 relative overflow-hidden">
