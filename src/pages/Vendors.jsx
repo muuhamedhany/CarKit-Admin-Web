@@ -12,6 +12,23 @@ const Vendors = () => {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+
+  const filteredAndSortedVendors = React.useMemo(() => {
+    const filtered = vendors.filter((v) => {
+      if (!search.trim()) return true;
+      const haystack = [v.name, v.contact_info, v.workshop_address].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(search.toLowerCase());
+    });
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'newest') {
+        return b.vendor_id - a.vendor_id;
+      } else {
+        return a.vendor_id - b.vendor_id;
+      }
+    });
+  }, [vendors, search, sortBy]);
 
   const fetchVendors = async () => {
     try {
@@ -40,7 +57,7 @@ const Vendors = () => {
     }
   };
 
-  const docCount = (v) => [v.document_1_url, v.document_2_url, v.document_3_url].filter(Boolean).length;
+  const docCount = (v) => [v.document_1_url, v.document_2_url, v.document_3_url, v.document_4_url, v.document_5_url, v.document_6_url].filter(Boolean).length;
 
   return (
     <div className="space-y-10 animate-fade-in">
@@ -51,25 +68,55 @@ const Vendors = () => {
           </h1>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
             Managing authorized commercial entities.
-            {!loading && <span className="text-cyber-pink ml-2">[{vendors.length} active nodes]</span>}
+            {!loading && <span className="text-cyber-pink ml-2">[{filteredAndSortedVendors.length} active nodes]</span>}
           </p>
         </div>
-        <div className="relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-pink to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
-          <select
-            className="relative rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none min-w-[200px]"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="all">Global Filter: All</option>
-            <option value="pending">Status: Pending</option>
-            <option value="approved">Status: Approved</option>
-            <option value="rejected">Status: Rejected</option>
-          </select>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-pink transition-colors">
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-            </svg>
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <div className="relative group min-w-[200px]">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-pink to-cyber-purple opacity-10 group-focus-within:opacity-30 transition-opacity blur rounded-xl" />
+            <input
+              type="text"
+              placeholder="SEARCH ENTITIES..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="relative w-full rounded-xl py-3 pl-4 pr-4 text-[10px] font-black tracking-widest uppercase outline-none bg-black border border-white/10 text-white focus:neo-border-pink transition-all placeholder:text-white/20"
+            />
+          </div>
+
+          <div className="relative group min-w-[180px]">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-pink to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
+            <select
+              className="relative w-full rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option value="all">Global Filter: All</option>
+              <option value="pending">Status: Pending</option>
+              <option value="approved">Status: Approved</option>
+              <option value="rejected">Status: Rejected</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-pink transition-colors">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="relative group min-w-[180px]">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-pink to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
+            <select
+              className="relative w-full rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="newest">Sort: Newest First</option>
+              <option value="oldest">Sort: Oldest First</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-pink transition-colors">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -81,7 +128,7 @@ const Vendors = () => {
           </div>
           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Querying Database</span>
         </div>
-      ) : vendors.length === 0 ? (
+      ) : filteredAndSortedVendors.length === 0 ? (
         <div className="glass-panel p-20 text-center relative overflow-hidden group">
           <div className="absolute inset-0 bg-cyber-blue/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           <Store className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-blue/20 transition-colors" />
@@ -89,7 +136,7 @@ const Vendors = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {vendors.map((vendor) => {
+          {filteredAndSortedVendors.map((vendor) => {
             const status = vendor.verification_status || 'pending';
             const s = getStatusStyle(status);
             const docs = docCount(vendor);

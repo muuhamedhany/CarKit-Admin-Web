@@ -15,6 +15,7 @@ const Bookings = () => {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -37,27 +38,42 @@ const Bookings = () => {
     fetchBookings();
   }, [token]);
 
-  const filteredBookings = bookings.filter((booking) => {
-    const haystack = [
-      booking.booking_id,
-      booking.user_name,
-      booking.service_name,
-      booking.provider_name,
-      booking.status,
-      booking.location,
-      booking.address_title,
-      booking.street,
-      booking.city,
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase();
+  const filteredAndSortedBookings = React.useMemo(() => {
+    const filtered = bookings.filter((booking) => {
+      const haystack = [
+        booking.booking_id,
+        booking.user_name,
+        booking.service_name,
+        booking.provider_name,
+        booking.status,
+        booking.location,
+        booking.address_title,
+        booking.street,
+        booking.city,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
 
-    return (
-      haystack.includes(search.toLowerCase()) &&
-      (statusFilter === 'all' || String(booking.status || '').toLowerCase() === statusFilter)
-    );
-  });
+      return (
+        haystack.includes(search.toLowerCase()) &&
+        (statusFilter === 'all' || String(booking.status || '').toLowerCase() === statusFilter)
+      );
+    });
+
+    return [...filtered].sort((a, b) => {
+      const dateA = a.booking_date && a.start_time ? new Date(`${String(a.booking_date).slice(0, 10)}T${a.start_time}`).getTime() : (a.booking_date ? new Date(a.booking_date).getTime() : 0);
+      const dateB = b.booking_date && b.start_time ? new Date(`${String(b.booking_date).slice(0, 10)}T${b.start_time}`).getTime() : (b.booking_date ? new Date(b.booking_date).getTime() : 0);
+
+      if (sortBy === 'newest') {
+        if (dateA !== dateB) return dateB - dateA;
+        return b.booking_id - a.booking_id;
+      } else {
+        if (dateA !== dateB) return dateA - dateB;
+        return a.booking_id - b.booking_id;
+      }
+    });
+  }, [bookings, search, statusFilter, sortBy]);
 
   const formatDate = (value) => {
     if (!value) return '—';
@@ -102,7 +118,7 @@ const Bookings = () => {
           </h1>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
             Monitoring active service fulfillment nodes.
-            {!loading && <span className="text-cyber-pink ml-2">[{filteredBookings.length} operations active]</span>}
+            {!loading && <span className="text-cyber-pink ml-2">[{filteredAndSortedBookings.length} operations active]</span>}
           </p>
         </div>
 
@@ -137,6 +153,23 @@ const Bookings = () => {
               </svg>
             </div>
           </div>
+
+          <div className="relative group w-full md:w-56">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-blue to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="relative w-full rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none"
+            >
+              <option value="newest">SORT: NEWEST FIRST</option>
+              <option value="oldest">SORT: OLDEST FIRST</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-blue transition-colors">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -151,7 +184,7 @@ const Bookings = () => {
         <div className="glass-panel p-8 text-center border-cyber-pink/30 bg-cyber-pink/5">
           <p className="text-xs font-black text-cyber-pink uppercase tracking-widest">{error}</p>
         </div>
-      ) : filteredBookings.length === 0 ? (
+      ) : filteredAndSortedBookings.length === 0 ? (
         <div className="glass-panel p-20 text-center relative overflow-hidden group">
           <div className="absolute inset-0 bg-cyber-pink/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           <Wrench className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-pink/20 transition-colors" />
@@ -161,7 +194,7 @@ const Bookings = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-          {filteredBookings.map((booking) => {
+          {filteredAndSortedBookings.map((booking) => {
             const status = String(booking.status || 'pending').toLowerCase();
             const s = getStatusStyle(status);
             return (

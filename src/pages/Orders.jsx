@@ -15,6 +15,7 @@ const Orders = () => {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -37,26 +38,41 @@ const Orders = () => {
     fetchOrders();
   }, [token]);
 
-  const filteredOrders = orders.filter((order) => {
-    const haystack = [
-      order.order_id,
-      order.user_name,
-      order.user_email,
-      order.status,
-      order.total_amount,
-      order.shipping_title,
-      order.shipping_street,
-      order.shipping_city,
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase();
+  const filteredAndSortedOrders = React.useMemo(() => {
+    const filtered = orders.filter((order) => {
+      const haystack = [
+        order.order_id,
+        order.user_name,
+        order.user_email,
+        order.status,
+        order.total_amount,
+        order.shipping_title,
+        order.shipping_street,
+        order.shipping_city,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
 
-    return (
-      haystack.includes(search.toLowerCase()) &&
-      (statusFilter === 'all' || String(order.status || '').toLowerCase() === statusFilter)
-    );
-  });
+      return (
+        haystack.includes(search.toLowerCase()) &&
+        (statusFilter === 'all' || String(order.status || '').toLowerCase() === statusFilter)
+      );
+    });
+
+    return [...filtered].sort((a, b) => {
+      const dateA = a.order_date ? new Date(a.order_date).getTime() : 0;
+      const dateB = b.order_date ? new Date(b.order_date).getTime() : 0;
+
+      if (sortBy === 'newest') {
+        if (dateA !== dateB) return dateB - dateA;
+        return b.order_id - a.order_id;
+      } else {
+        if (dateA !== dateB) return dateA - dateB;
+        return a.order_id - b.order_id;
+      }
+    });
+  }, [orders, search, statusFilter, sortBy]);
 
   const formatDate = (value) => {
     if (!value) return '—';
@@ -95,7 +111,7 @@ const Orders = () => {
           </h1>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
             Monitoring global product fulfillment logistics.
-            {!loading && <span className="text-cyber-pink ml-2">[{filteredOrders.length} transits detected]</span>}
+            {!loading && <span className="text-cyber-pink ml-2">[{filteredAndSortedOrders.length} transits detected]</span>}
           </p>
         </div>
 
@@ -130,6 +146,23 @@ const Orders = () => {
               </svg>
             </div>
           </div>
+
+          <div className="relative group w-full md:w-56">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-blue to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="relative w-full rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none"
+            >
+              <option value="newest">SORT: NEWEST FIRST</option>
+              <option value="oldest">SORT: OLDEST FIRST</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-blue transition-colors">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -144,7 +177,7 @@ const Orders = () => {
         <div className="glass-panel p-8 text-center border-cyber-pink/30 bg-cyber-pink/5">
           <p className="text-xs font-black text-cyber-pink uppercase tracking-widest">{error}</p>
         </div>
-      ) : filteredOrders.length === 0 ? (
+      ) : filteredAndSortedOrders.length === 0 ? (
         <div className="glass-panel p-20 text-center relative overflow-hidden group">
           <div className="absolute inset-0 bg-cyber-purple/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           <Package className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-purple/20 transition-colors" />
@@ -154,7 +187,7 @@ const Orders = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-          {filteredOrders.map((order) => {
+          {filteredAndSortedOrders.map((order) => {
             const status = String(order.status || 'pending').toLowerCase();
             const s = getStatusStyle(status);
             return (

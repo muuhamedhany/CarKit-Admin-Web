@@ -12,6 +12,23 @@ const ServiceProviders = () => {
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+
+  const filteredAndSortedProviders = React.useMemo(() => {
+    const filtered = providers.filter((p) => {
+      if (!search.trim()) return true;
+      const haystack = [p.name, p.contact_info].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(search.toLowerCase());
+    });
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'newest') {
+        return b.provider_id - a.provider_id;
+      } else {
+        return a.provider_id - b.provider_id;
+      }
+    });
+  }, [providers, search, sortBy]);
 
   const fetchProviders = async () => {
     try {
@@ -43,37 +60,67 @@ const ServiceProviders = () => {
     }
   };
 
-  const docCount = (p) => [p.document_1_url, p.document_2_url, p.document_3_url].filter(Boolean).length;
+  const docCount = (p) => [p.document_1_url, p.document_2_url, p.document_3_url, p.document_4_url, p.document_5_url, p.document_6_url].filter(Boolean).length;
 
   return (
     <div className="space-y-10 animate-fade-in">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-8">
         <div>
           <h1 className="text-4xl font-black text-white tracking-tighter display-font uppercase">
             Service Entities
           </h1>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
             Vetting and synchronization of platform providers.
-            {!loading && <span className="text-cyber-pink ml-2">[{providers.length} registered nodes]</span>}
+            {!loading && <span className="text-cyber-pink ml-2">[{filteredAndSortedProviders.length} registered nodes]</span>}
           </p>
         </div>
 
-        <div className="relative group w-full md:w-56">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-blue to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="relative w-full rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none"
-          >
-            <option value="all">FILTER: GLOBAL</option>
-            <option value="pending">STATUS: PENDING</option>
-            <option value="approved">STATUS: APPROVED</option>
-            <option value="rejected">STATUS: REJECTED</option>
-          </select>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-blue transition-colors">
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-            </svg>
+        <div className="flex flex-col sm:flex-row gap-4 w-full xl:w-auto">
+          <div className="relative group min-w-[200px]">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-blue to-cyber-purple opacity-10 group-focus-within:opacity-30 transition-opacity blur rounded-xl" />
+            <input
+              type="text"
+              placeholder="SEARCH ENTITIES..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="relative w-full rounded-xl py-3 pl-4 pr-4 text-[10px] font-black tracking-widest uppercase outline-none bg-black border border-white/10 text-white focus:neo-border-purple transition-all placeholder:text-white/20"
+            />
+          </div>
+
+          <div className="relative group min-w-[180px]">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-blue to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="relative w-full rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none"
+            >
+              <option value="all">FILTER: GLOBAL</option>
+              <option value="pending">STATUS: PENDING</option>
+              <option value="approved">STATUS: APPROVED</option>
+              <option value="rejected">STATUS: REJECTED</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-blue transition-colors">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="relative group min-w-[180px]">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-blue to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="relative w-full rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none"
+            >
+              <option value="newest">SORT: NEWEST FIRST</option>
+              <option value="oldest">SORT: OLDEST FIRST</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-blue transition-colors">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -85,7 +132,7 @@ const ServiceProviders = () => {
           </div>
           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Scanning Registry</span>
         </div>
-      ) : providers.length === 0 ? (
+      ) : filteredAndSortedProviders.length === 0 ? (
         <div className="glass-panel p-20 text-center relative overflow-hidden group">
           <div className="absolute inset-0 bg-cyber-purple/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           <Wrench className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-purple/20 transition-colors" />
@@ -95,7 +142,7 @@ const ServiceProviders = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-          {providers.map((provider) => {
+          {filteredAndSortedProviders.map((provider) => {
             const status = provider.verification_status || 'pending';
             const s = getStatusStyle(status);
             const docs = docCount(provider);

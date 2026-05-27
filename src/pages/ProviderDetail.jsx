@@ -93,9 +93,12 @@ const ProviderDetail = () => {
   const status = provider.verification_status || 'pending';
   const s = getStatusStyle(status);
   const documents = [
-    { label: 'Document 1', url: provider.document_1_url },
-    { label: 'Document 2', url: provider.document_2_url },
-    { label: 'Document 3', url: provider.document_3_url },
+    { label: 'Business License', url: provider.document_1_url },
+    { label: 'Tax ID / EIN', url: provider.document_2_url },
+    { label: 'National ID - FrontSide', url: provider.document_3_url },
+    { label: 'National ID - BackSide', url: provider.document_4_url },
+    { label: 'Owner Selfie', url: provider.document_5_url },
+    { label: 'Experience Certs', url: provider.document_6_url },
   ].filter(d => d.url);
 
   return (

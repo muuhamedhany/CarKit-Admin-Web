@@ -12,6 +12,29 @@ const PendingProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [approving, setApproving] = useState({});
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+
+  const filteredAndSortedProducts = React.useMemo(() => {
+    const filtered = products.filter((p) => {
+      if (!search.trim()) return true;
+      const haystack = [p.name, p.vendor_name].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(search.toLowerCase());
+    });
+
+    return [...filtered].sort((a, b) => {
+      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+
+      if (sortBy === 'newest') {
+        if (dateA !== dateB) return dateB - dateA;
+        return b.product_id - a.product_id;
+      } else {
+        if (dateA !== dateB) return dateA - dateB;
+        return a.product_id - b.product_id;
+      }
+    });
+  }, [products, search, sortBy]);
 
   const fetchPendingProducts = async () => {
     try {
@@ -80,8 +103,36 @@ const PendingProducts = () => {
           </h1>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
             Verification required for incoming vendor payloads.
-            {!loading && <span className="text-cyber-pink ml-2">[{products.length} units queued]</span>}
+            {!loading && <span className="text-cyber-pink ml-2">[{filteredAndSortedProducts.length} units queued]</span>}
           </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <div className="relative group min-w-[200px]">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-pink to-cyber-purple opacity-10 group-focus-within:opacity-30 transition-opacity blur rounded-xl" />
+            <input
+              type="text"
+              placeholder="SEARCH PAYLOADS..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="relative w-full rounded-xl py-3 pl-4 pr-4 text-[10px] font-black tracking-widest uppercase outline-none bg-black border border-white/10 text-white focus:neo-border-pink transition-all placeholder:text-white/20"
+            />
+          </div>
+          <div className="relative group min-w-[180px]">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-pink to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
+            <select
+              className="relative w-full rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="newest">SORT: NEWEST FIRST</option>
+              <option value="oldest">SORT: OLDEST FIRST</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-pink transition-colors">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -92,7 +143,7 @@ const PendingProducts = () => {
           </div>
           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Syncing Registry</span>
         </div>
-      ) : products.length === 0 ? (
+      ) : filteredAndSortedProducts.length === 0 ? (
         <div className="glass-panel p-20 text-center relative overflow-hidden group">
           <div className="absolute inset-0 bg-cyber-blue/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           <Package className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-blue/20 transition-colors" />
@@ -100,7 +151,7 @@ const PendingProducts = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map((product) => (
+          {filteredAndSortedProducts.map((product) => (
             <div
               key={product.product_id}
               onClick={() => navigate(`/pending-products/${product.product_id}`)}

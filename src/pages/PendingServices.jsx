@@ -12,6 +12,24 @@ const PendingServices = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState({});
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+
+  const filteredAndSortedServices = React.useMemo(() => {
+    const filtered = services.filter((s) => {
+      if (!search.trim()) return true;
+      const haystack = [s.name, s.provider_name].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(search.toLowerCase());
+    });
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'newest') {
+        return b.service_id - a.service_id;
+      } else {
+        return a.service_id - b.service_id;
+      }
+    });
+  }, [services, search, sortBy]);
 
   const fetchPendingServices = async () => {
     try {
@@ -67,14 +85,44 @@ const PendingServices = () => {
 
   return (
     <div className="space-y-10 animate-fade-in">
-      <div>
-        <h1 className="text-4xl font-black text-white tracking-tighter display-font uppercase">
-          Service Intake
-        </h1>
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
-          Review and authorization of provider service submissions.
-          {!loading && <span className="text-cyber-pink ml-2">[{services.length} pending vetting]</span>}
-        </p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <h1 className="text-4xl font-black text-white tracking-tighter display-font uppercase">
+            Service Intake
+          </h1>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
+            Review and authorization of provider service submissions.
+            {!loading && <span className="text-cyber-pink ml-2">[{filteredAndSortedServices.length} pending vetting]</span>}
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <div className="relative group min-w-[200px]">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-pink to-cyber-purple opacity-10 group-focus-within:opacity-30 transition-opacity blur rounded-xl" />
+            <input
+              type="text"
+              placeholder="SEARCH INTAKES..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="relative w-full rounded-xl py-3 pl-4 pr-4 text-[10px] font-black tracking-widest uppercase outline-none bg-black border border-white/10 text-white focus:neo-border-pink transition-all placeholder:text-white/20"
+            />
+          </div>
+          <div className="relative group min-w-[180px]">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-pink to-cyber-purple opacity-20 group-hover:opacity-40 transition-opacity blur rounded-xl" />
+            <select
+              className="relative w-full rounded-xl py-3 pl-4 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer bg-black border border-white/10 text-white appearance-none"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="newest">SORT: NEWEST FIRST</option>
+              <option value="oldest">SORT: OLDEST FIRST</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-cyber-pink transition-colors">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
       </div>
 
       {loading ? (
@@ -84,7 +132,7 @@ const PendingServices = () => {
           </div>
           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Syncing Services</span>
         </div>
-      ) : services.length === 0 ? (
+      ) : filteredAndSortedServices.length === 0 ? (
         <div className="glass-panel p-20 text-center relative overflow-hidden group">
           <div className="absolute inset-0 bg-cyber-purple/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           <Wrench className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-purple/20 transition-colors" />
@@ -94,7 +142,7 @@ const PendingServices = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-          {services.map((service) => (
+          {filteredAndSortedServices.map((service) => (
             <button
               key={service.service_id}
               onClick={() => navigate(`/pending-services/${service.service_id}`)}

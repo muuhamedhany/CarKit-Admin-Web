@@ -24,6 +24,7 @@ export default function Drivers() {
   const [drivers, setDrivers] = useState([]);
   const [status, setStatus] = useState('all');
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
@@ -39,9 +40,24 @@ export default function Drivers() {
 
   useEffect(() => { load(); }, [status]);
 
-  const filtered = useMemo(() => drivers.filter((driver) => [
-    driver.full_name, driver.name, driver.phone, driver.vehicle_type, driver.vehicle_plate, driver.approval_status,
-  ].filter(Boolean).join(' ').toLowerCase().includes(search.toLowerCase())), [drivers, search]);
+  const filteredAndSorted = useMemo(() => {
+    const filtered = drivers.filter((driver) => [
+      driver.full_name, driver.name, driver.phone, driver.vehicle_type, driver.vehicle_plate, driver.approval_status,
+    ].filter(Boolean).join(' ').toLowerCase().includes(search.toLowerCase()));
+
+    return [...filtered].sort((a, b) => {
+      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+
+      if (sortBy === 'newest') {
+        if (dateA !== dateB) return dateB - dateA;
+        return b.driver_id - a.driver_id;
+      } else {
+        if (dateA !== dateB) return dateA - dateB;
+        return a.driver_id - b.driver_id;
+      }
+    });
+  }, [drivers, search, sortBy]);
 
   const setApproval = async (driverId, action, event) => {
     event.stopPropagation();
@@ -56,7 +72,7 @@ export default function Drivers() {
           <h1 className="text-4xl font-black text-white tracking-tighter display-font uppercase">Drivers</h1>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mt-2">
             Approve and monitor delivery agents.
-            {!loading && <span className="text-cyber-pink ml-2">[{filtered.length} active nodes]</span>}
+            {!loading && <span className="text-cyber-pink ml-2">[{filteredAndSorted.length} active nodes]</span>}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
@@ -67,6 +83,10 @@ export default function Drivers() {
           <select className="px-4 py-3 rounded-xl bg-black border border-white/10 text-white text-xs outline-none" value={status} onChange={(e) => setStatus(e.target.value)}>
             {statuses.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
+          <select className="px-4 py-3 rounded-xl bg-black border border-white/10 text-white text-xs outline-none" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <option value="newest">Sort: Newest First</option>
+            <option value="oldest">Sort: Oldest First</option>
+          </select>
         </div>
       </div>
 
@@ -75,7 +95,7 @@ export default function Drivers() {
           <div className="w-16 h-16 rounded-full border-2 border-cyber-pink/20 border-t-cyber-pink animate-spin" />
           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyber-pink animate-pulse">Querying Database</span>
         </div>
-      ) : filtered.length === 0 ? (
+      ) : filteredAndSorted.length === 0 ? (
         <div className="glass-panel p-20 text-center relative overflow-hidden group">
           <div className="absolute inset-0 bg-cyber-blue/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           <Truck className="w-16 h-16 mx-auto mb-6 text-white/5 group-hover:text-cyber-blue/20 transition-colors" />
@@ -83,7 +103,7 @@ export default function Drivers() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.map((driver) => {
+          {filteredAndSorted.map((driver) => {
             const name = driver.full_name || driver.name || 'Driver';
             const statusStyle = getStatusStyle(driver.approval_status);
             return (

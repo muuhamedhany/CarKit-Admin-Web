@@ -80,8 +80,8 @@ const VendorDetail = () => {
         <p className="text-text-secondary text-sm max-w-md mx-auto mb-10 leading-relaxed">
           The vendor entity you are attempting to access does not exist in the current registry shard.
         </p>
-        <button 
-          onClick={() => navigate('/vendors')} 
+        <button
+          onClick={() => navigate('/vendors')}
           className="cyber-button px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20"
         >
           Return to Registry
@@ -93,9 +93,12 @@ const VendorDetail = () => {
   const status = vendor.verification_status || 'pending';
   const s = getStatusStyle(status);
   const documents = [
-    { label: 'Document 1', url: vendor.document_1_url },
-    { label: 'Document 2', url: vendor.document_2_url },
-    { label: 'Document 3', url: vendor.document_3_url },
+    { label: 'Business License', url: vendor.document_1_url },
+    { label: 'Tax ID / EIN', url: vendor.document_2_url },
+    { label: 'National ID - FrontSide', url: vendor.document_3_url },
+    { label: 'National ID - BackSide', url: vendor.document_4_url },
+    { label: 'Owner Selfie', url: vendor.document_5_url },
+    { label: 'Experience Certs', url: vendor.document_6_url },
   ].filter(d => d.url);
 
   return (
@@ -110,7 +113,7 @@ const VendorDetail = () => {
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
             Registry Link
           </button>
-          
+
           <div className="flex items-center gap-6">
             <div className="w-20 h-20 rounded-3xl bg-black border border-white/5 flex items-center justify-center neo-border-purple relative overflow-hidden group">
               <div className="absolute inset-0 bg-cyber-purple/5 group-hover:bg-cyber-purple/10 transition-colors" />
@@ -154,14 +157,13 @@ const VendorDetail = () => {
         <div className="glass-panel p-10 relative overflow-hidden border-white/5">
           <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30 shadow-[0_0_15px_rgba(0,242,255,0.5)]" />
           <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-10 flex items-center gap-3">
-            <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" /> 
+            <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" />
             Entity Profile
           </h2>
           <div className="space-y-8">
             <InfoRow label="Legal Name" value={vendor.name} accent="var(--cyber-blue)" />
             <InfoRow label="Communication Channel" value={vendor.contact_info || 'Protocol Offline'} accent="var(--cyber-purple)" />
             <InfoRow label="System ID" value={`#${vendor.vendor_id}`} accent="var(--cyber-pink)" />
-            <InfoRow label="Registration Link" value={vendor.created_at ? new Date(vendor.created_at).toLocaleDateString() : '—'} accent="var(--cyber-blue)" />
           </div>
         </div>
 
@@ -169,7 +171,7 @@ const VendorDetail = () => {
         <div className="glass-panel p-10 relative overflow-hidden border-white/5">
           <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-30 shadow-[0_0_15px_rgba(179,136,255,0.5)]" />
           <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-10 flex items-center gap-3">
-            <div className="w-2 h-2 bg-cyber-purple rounded-full shadow-[0_0_10px_rgba(179,136,255,0.8)]" /> 
+            <div className="w-2 h-2 bg-cyber-purple rounded-full shadow-[0_0_10px_rgba(179,136,255,0.8)]" />
             Verification Documents
           </h2>
           {documents.length === 0 ? (
@@ -214,7 +216,7 @@ const VendorDetail = () => {
       <div className="glass-panel p-10 relative overflow-hidden border-white/5">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber-blue to-transparent opacity-30 shadow-[0_0_20px_rgba(0,242,255,0.3)]" />
         <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-3">
-          <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" /> 
+          <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" />
           Verification Protocol
         </h2>
         <div className="flex flex-wrap gap-4">
