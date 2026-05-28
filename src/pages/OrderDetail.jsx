@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../theme/ThemeContext';
 import { ArrowLeft, CheckCircle2, CircleDashed, Clock3, Mail, MapPin, Package, ShoppingBag, Truck, XCircle } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -30,6 +31,8 @@ const formatDateTime = (dateString) => {
 const OrderDetail = () => {
   const { id } = useParams();
   const { token } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme !== 'light';
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -74,22 +77,34 @@ const OrderDetail = () => {
     }
   };
 
-  const getStatusStyle = (status) => {
+  const getStatusStyle = (status, isDark = true) => {
     switch (status) {
       case 'delivered':
-        return { bg: 'rgba(34,197,94,0.1)', color: '#4ade80', glow: '0 0 15px rgba(34,197,94,0.3)', border: 'rgba(34,197,94,0.2)' };
+        return isDark
+          ? { bg: 'rgba(34,197,94,0.1)', color: '#4ade80', glow: '0 0 15px rgba(34,197,94,0.3)', border: 'rgba(34,197,94,0.2)' }
+          : { bg: 'rgba(22,163,74,0.1)', color: '#16a34a', glow: '0 0 0 transparent', border: 'rgba(22,163,74,0.2)' };
       case 'processing':
       case 'ready_for_pickup':
       case 'in_transit':
-        return { bg: 'rgba(0, 212, 255, 0.1)', color: '#00D4FF', glow: '0 0 15px rgba(0, 212, 255, 0.3)', border: 'rgba(0, 212, 255, 0.2)' };
+        return isDark
+          ? { bg: 'rgba(0, 212, 255, 0.1)', color: '#00D4FF', glow: '0 0 15px rgba(0, 212, 255, 0.3)', border: 'rgba(0, 212, 255, 0.2)' }
+          : { bg: 'rgba(2, 132, 199, 0.1)', color: '#0284c7', glow: '0 0 0 transparent', border: 'rgba(2, 132, 199, 0.2)' };
       case 'cancelled':
-        return { bg: 'rgba(255, 0, 128, 0.1)', color: '#FF0080', glow: '0 0 15px rgba(255, 0, 128, 0.3)', border: 'rgba(255, 0, 128, 0.2)' };
+        return isDark
+          ? { bg: 'rgba(255, 0, 128, 0.1)', color: '#FF0080', glow: '0 0 15px rgba(255, 0, 128, 0.3)', border: 'rgba(255, 0, 128, 0.2)' }
+          : { bg: 'rgba(184, 50, 145, 0.1)', color: '#B83291', glow: '0 0 0 transparent', border: 'rgba(184, 50, 145, 0.2)' };
       case 'return_requested':
-        return { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b', glow: '0 0 15px rgba(245,158,11,0.3)', border: 'rgba(245,158,11,0.2)' };
+        return isDark
+          ? { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b', glow: '0 0 15px rgba(245,158,11,0.3)', border: 'rgba(245,158,11,0.2)' }
+          : { bg: 'rgba(217,119,6,0.1)', color: '#d97706', glow: '0 0 0 transparent', border: 'rgba(217,119,6,0.2)' };
       case 'returned':
-        return { bg: 'rgba(156,163,175,0.1)', color: '#9ca3af', glow: '0 0 15px rgba(156,163,175,0.3)', border: 'rgba(156,163,175,0.2)' };
+        return isDark
+          ? { bg: 'rgba(156,163,175,0.1)', color: '#9ca3af', glow: '0 0 15px rgba(156,163,175,0.3)', border: 'rgba(156,163,175,0.2)' }
+          : { bg: 'rgba(75,85,99,0.1)', color: '#4b5563', glow: '0 0 0 transparent', border: 'rgba(75,85,99,0.2)' };
       default:
-        return { bg: 'rgba(123, 44, 191, 0.1)', color: '#7B2CBF', glow: '0 0 15px rgba(123, 44, 191, 0.3)', border: 'rgba(123, 44, 191, 0.2)' };
+        return isDark
+          ? { bg: 'rgba(123, 44, 191, 0.1)', color: '#7B2CBF', glow: '0 0 15px rgba(123, 44, 191, 0.3)', border: 'rgba(123, 44, 191, 0.2)' }
+          : { bg: 'rgba(84, 32, 153, 0.1)', color: '#542099', glow: '0 0 0 transparent', border: 'rgba(84, 32, 153, 0.2)' };
     }
   };
 
@@ -118,7 +133,7 @@ const OrderDetail = () => {
   }
 
   const status = String(order.status || 'pending').toLowerCase();
-  const s = getStatusStyle(status);
+  const s = getStatusStyle(status, isDark);
   const items = Array.isArray(order.items) ? order.items : [];
   const shippingAddress = [order.shipping_title, order.shipping_street, order.shipping_city].filter(Boolean).join(' • ') || '—';
   const itemCount = items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
@@ -143,12 +158,12 @@ const OrderDetail = () => {
             <div>
               <h1 className="text-4xl font-black text-white tracking-tighter display-font leading-none mb-2 uppercase">Order #{order.order_id}</h1>
               <div className="flex items-center gap-3">
-                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border" 
-                      style={{ background: s.bg, color: s.color, borderColor: s.border, boxShadow: s.glow }}>
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border"
+                  style={{ background: s.bg, color: s.color, borderColor: s.border, boxShadow: s.glow }}>
                   <div className="w-1 h-1 rounded-full bg-current animate-pulse" />
                   {status}
                 </span>
-                <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">ID: {order.user_id || 'UNKNOWN_OP'}</span>
+
               </div>
             </div>
           </div>
@@ -170,21 +185,19 @@ const OrderDetail = () => {
           <div className="flex border-b border-white/5 overflow-x-auto custom-scrollbar gap-2">
             <button
               onClick={() => setActiveTab('payload')}
-              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
-                activeTab === 'payload'
-                  ? 'text-cyber-blue border-cyber-blue'
-                  : 'text-text-secondary hover:text-white border-transparent'
-              }`}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${activeTab === 'payload'
+                ? 'text-cyber-blue border-cyber-blue'
+                : 'text-text-secondary hover:text-white border-transparent'
+                }`}
             >
               Payload Composition
             </button>
             <button
               onClick={() => setActiveTab('logistics')}
-              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
-                activeTab === 'logistics'
-                  ? 'text-cyber-blue border-cyber-blue'
-                  : 'text-text-secondary hover:text-white border-transparent'
-              }`}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${activeTab === 'logistics'
+                ? 'text-cyber-blue border-cyber-blue'
+                : 'text-text-secondary hover:text-white border-transparent'
+                }`}
             >
               Customer & Logistics
             </button>
@@ -274,18 +287,17 @@ const OrderDetail = () => {
               {STATUS_OPTIONS.map((nextStatus) => {
                 const active = nextStatus === status;
                 const isDanger = nextStatus === 'cancelled';
-                
+
                 return (
                   <button
                     key={nextStatus}
                     type="button"
                     onClick={() => updateStatus(nextStatus)}
                     disabled={updating || active}
-                    className={`cyber-button w-full flex items-center justify-between px-5 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border cursor-pointer ${
-                      active ? 'neo-border-pink bg-cyber-pink/10' : 'bg-white/5 border-white/5'
-                    } disabled:opacity-40`}
+                    className={`cyber-button w-full flex items-center justify-between px-5 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${active ? 'neo-border-pink bg-cyber-pink/10 cursor-default' : 'bg-white/5 border-white/5 cursor-pointer disabled:opacity-40'
+                      }`}
                     style={{
-                      color: active ? 'white' : 'var(--text-secondary)',
+                      color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
                     }}
                   >
                     <span className="flex items-center gap-3">

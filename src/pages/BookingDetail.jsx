@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../theme/ThemeContext';
 import { ArrowLeft, CalendarDays, Car, CheckCircle2, CircleDashed, Clock3, Mail, MapPin, Phone, UserCircle, Wrench, XCircle } from 'lucide-react';
+
 
 const API_URL = import.meta.env.VITE_API_URL;
 const STATUS_OPTIONS = ['pending', 'confirmed', 'in-progress', 'completed', 'cancelled'];
@@ -10,6 +12,8 @@ const STATUS_OPTIONS = ['pending', 'confirmed', 'in-progress', 'completed', 'can
 const BookingDetail = () => {
   const { id } = useParams();
   const { token } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme !== 'light';
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -54,17 +58,25 @@ const BookingDetail = () => {
     }
   };
 
-  const getStatusStyle = (status) => {
+  const getStatusStyle = (status, isDark = true) => {
     switch (status) {
       case 'completed':
-        return { bg: 'rgba(34,197,94,0.1)', color: '#4ade80', border: 'rgba(34,197,94,0.2)', glow: '0 0 10px rgba(34,197,94,0.2)' };
+        return isDark
+          ? { bg: 'rgba(34,197,94,0.1)', color: '#4ade80', border: 'rgba(34,197,94,0.2)', glow: '0 0 10px rgba(34,197,94,0.2)' }
+          : { bg: 'rgba(22,163,74,0.1)', color: '#16a34a', border: 'rgba(22,163,74,0.2)', glow: '0 0 0 transparent' };
       case 'confirmed':
       case 'in-progress':
-        return { bg: 'rgba(0,212,255,0.1)', color: '#00D4FF', border: 'rgba(0,212,255,0.2)', glow: '0 0 10px rgba(0,212,255,0.2)' };
+        return isDark
+          ? { bg: 'rgba(0,212,255,0.1)', color: '#00D4FF', border: 'rgba(0,212,255,0.2)', glow: '0 0 10px rgba(0,212,255,0.2)' }
+          : { bg: 'rgba(2,132,199,0.1)', color: '#0284c7', border: 'rgba(2,132,199,0.2)', glow: '0 0 0 transparent' };
       case 'cancelled':
-        return { bg: 'rgba(255,0,128,0.1)', color: '#FF0080', border: 'rgba(255,0,128,0.2)', glow: '0 0 10px rgba(255,0,128,0.2)' };
+        return isDark
+          ? { bg: 'rgba(255,0,128,0.1)', color: '#FF0080', border: 'rgba(255,0,128,0.2)', glow: '0 0 10px rgba(255,0,128,0.2)' }
+          : { bg: 'rgba(184, 50, 145, 0.1)', color: '#B83291', border: 'rgba(184, 50, 145, 0.2)', glow: '0 0 0 transparent' };
       default:
-        return { bg: 'rgba(180,92,255,0.1)', color: '#B45CFF', border: 'rgba(180,92,255,0.2)', glow: '0 0 10px rgba(180,92,255,0.2)' };
+        return isDark
+          ? { bg: 'rgba(180,92,255,0.1)', color: '#B45CFF', border: 'rgba(180,92,255,0.2)', glow: '0 0 10px rgba(180,92,255,0.2)' }
+          : { bg: 'rgba(84, 32, 153, 0.1)', color: '#542099', border: 'rgba(84, 32, 153, 0.2)', glow: '0 0 0 transparent' };
     }
   };
 
@@ -113,7 +125,7 @@ const BookingDetail = () => {
   }
 
   const status = String(booking.status || 'pending').toLowerCase();
-  const s = getStatusStyle(status);
+  const s = getStatusStyle(status, isDark);
   const locationText = [booking.location, booking.address_title, booking.street, booking.city].filter(Boolean).join(' • ') || '—';
   const vehicleText = [booking.make_name, booking.model_name, booking.vehicle_year].filter(Boolean).join(' ') || '—';
 
@@ -269,12 +281,14 @@ const BookingDetail = () => {
                     key={nextStatus}
                     onClick={() => updateStatus(nextStatus)}
                     disabled={updating || active}
-                    className={`w-full group flex items-center justify-between px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border outline-none cursor-pointer
-                      ${active ? 'bg-cyber-pink/20 border-cyber-pink/40 text-cyber-pink' : 
-                        isDanger ? 'bg-red-500/5 border-red-500/10 text-red-400 hover:bg-red-500/10 hover:border-red-500/20' :
-                        isSuccess ? 'bg-green-500/5 border-green-500/10 text-green-400 hover:bg-green-500/10 hover:border-green-500/20' :
-                        'bg-white/5 border-white/10 text-text-secondary hover:bg-white/10 hover:text-white'
-                      } disabled:opacity-50`}
+                    className={`w-full group flex items-center justify-between px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border outline-none ${
+                      active ? 'bg-cyber-pink/20 border-cyber-pink/40 text-cyber-pink cursor-default' : 
+                        `cursor-pointer disabled:opacity-50 ${
+                          isDanger ? 'bg-red-500/5 border-red-500/10 text-red-400 hover:bg-red-500/10 hover:border-red-500/20' :
+                          isSuccess ? 'bg-green-500/5 border-green-500/10 text-green-400 hover:bg-green-500/10 hover:border-green-500/20' :
+                          'bg-white/5 border-white/10 text-text-secondary hover:bg-white/10 hover:text-white'
+                        }`
+                    }`}
                   >
                     <span className="flex items-center gap-3">
                       {nextStatus === 'cancelled' ? <XCircle className="w-4 h-4" /> : 
