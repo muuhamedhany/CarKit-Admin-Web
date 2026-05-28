@@ -1,5 +1,6 @@
-import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '../theme/ThemeContext';
+import splashIconBlack from '../assets/splash-icon-black.png';
+import splashIconWhite from '../assets/splash-icon-white.png';
 
 export default function ThemeToggle({ compact = false }) {
   const { theme, toggleTheme } = useTheme();
@@ -13,8 +14,14 @@ export default function ThemeToggle({ compact = false }) {
       title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       className={`theme-toggle ${compact ? 'theme-toggle-compact' : ''}`}
     >
-      {isDark ? <Sun size={25} /> : <Moon size={25} />}
+      <img
+        src={isDark ? splashIconWhite : splashIconBlack}
+        alt=""
+        aria-hidden="true"
+        style={{ width: 25, height: 25, objectFit: 'contain' }}
+      />
       {!compact && <span>{isDark ? 'Light' : 'Dark'}</span>}
     </button>
   );
 }
+

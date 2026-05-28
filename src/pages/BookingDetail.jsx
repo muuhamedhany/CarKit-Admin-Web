@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowLeft, CalendarDays, Car, CheckCircle2, CircleDashed, Clock3, Loader2, Mail, MapPin, Phone, UserCircle, Wrench, XCircle } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Car, CheckCircle2, CircleDashed, Clock3, Mail, MapPin, Phone, UserCircle, Wrench, XCircle } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const STATUS_OPTIONS = ['pending', 'confirmed', 'in-progress', 'completed', 'cancelled'];
@@ -14,6 +14,7 @@ const BookingDetail = () => {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -117,9 +118,9 @@ const BookingDetail = () => {
   const vehicleText = [booking.make_name, booking.model_name, booking.vehicle_year].filter(Boolean).join(' ') || '—';
 
   return (
-    <div className="max-w-6xl mx-auto space-y-10 animate-fade-in pb-20">
+    <div className="max-w-6xl mx-auto space-y-6 animate-fade-in pb-20">
       {/* Navigation & Header */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
         <button
           onClick={() => navigate('/bookings')}
           className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary hover:text-cyber-pink transition-colors group"
@@ -162,62 +163,95 @@ const BookingDetail = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8 space-y-10">
-          {/* Main Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div className="glass-panel p-8 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-50" />
-              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-2">
-                <UserCircle className="w-4 h-4 text-cyber-blue" /> CUSTOMER_ENTITY
-              </h2>
-              <div className="space-y-6">
-                <InfoRow label="ENTITY_NAME" value={booking.customer_name || '—'} icon={UserCircle} color="blue" />
-                <InfoRow label="NEXUS_EMAIL" value={booking.customer_email || '—'} icon={Mail} color="blue" />
-                <InfoRow label="COMMS_LINK" value={booking.customer_phone || '—'} icon={Phone} color="blue" />
-              </div>
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left column containing tabs */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Tab Selector */}
+          <div className="flex border-b border-white/5 overflow-x-auto custom-scrollbar gap-2">
+            <button
+              onClick={() => setActiveTab('profile')}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
+                activeTab === 'profile'
+                  ? 'text-cyber-blue border-cyber-blue'
+                  : 'text-text-secondary hover:text-white border-transparent'
+              }`}
+            >
+              Entity Profile
+            </button>
+            <button
+              onClick={() => setActiveTab('logistics')}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
+                activeTab === 'logistics'
+                  ? 'text-cyber-blue border-cyber-blue'
+                  : 'text-text-secondary hover:text-white border-transparent'
+              }`}
+            >
+              Logistics & Vehicle
+            </button>
+            <button
+              onClick={() => setActiveTab('notes')}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
+                activeTab === 'notes'
+                  ? 'text-cyber-blue border-cyber-blue'
+                  : 'text-text-secondary hover:text-white border-transparent'
+              }`}
+            >
+              Observations
+            </button>
+          </div>
 
-            <div className="glass-panel p-8 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-50" />
-              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-2">
-                <Wrench className="w-4 h-4 text-cyber-purple" /> SERVICE_SPEC
+          {/* Tab Content: Profile */}
+          {activeTab === 'profile' && (
+            <div className="glass-panel p-8 relative overflow-hidden animate-fade-in space-y-8">
+              <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-50" />
+              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 flex items-center gap-2">
+                <UserCircle className="w-4 h-4 text-cyber-blue" /> CUSTOMER_AND_SERVICE_ENTITY
               </h2>
-              <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <InfoRow label="ENTITY_NAME" value={booking.customer_name || '—'} icon={UserCircle} color="blue" />
                 <InfoRow label="PROCEDURE" value={booking.service_name || '—'} icon={Wrench} color="purple" />
+                <InfoRow label="NEXUS_EMAIL" value={booking.customer_email || '—'} icon={Mail} color="blue" />
                 <InfoRow label="EXEC_NODE" value={booking.provider_name || '—'} icon={UserCircle} color="purple" />
+                <InfoRow label="COMMS_LINK" value={booking.customer_phone || '—'} icon={Phone} color="blue" />
                 <InfoRow label="EST_DURATION" value={booking.service_duration ? `${booking.service_duration} min` : '—'} icon={Clock3} color="purple" />
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Schedule & Vehicle */}
-          <div className="glass-panel p-8 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-1 h-full bg-white opacity-20" />
-            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-10 flex items-center gap-2">
-              <MapPin className="w-4 h-4" /> LOGISTICS_MAP
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-              <InfoRow label="DEPLOY_DATE" value={formatDate(booking.booking_date)} icon={CalendarDays} />
-              <InfoRow label="WINDOW" value={`${formatTime(booking.start_time)}${booking.end_time ? ` - ${formatTime(booking.end_time)}` : ''}`} icon={Clock3} />
-              <InfoRow label="LOC_COORDINATES" value={locationText} icon={MapPin} />
-              <InfoRow label="LOC_TYPE" value={booking.location_type || '—'} icon={MapPin} />
-              <InfoRow label="TARGET_VEHICLE" value={vehicleText} icon={Car} />
-              <InfoRow label="HULL_COATING" value={booking.vehicle_color || '—'} icon={Car} />
+          {/* Tab Content: Logistics */}
+          {activeTab === 'logistics' && (
+            <div className="glass-panel p-8 relative overflow-hidden animate-fade-in space-y-8">
+              <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-50" />
+              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-cyber-purple" /> LOGISTICS_MAP
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <InfoRow label="DEPLOY_DATE" value={formatDate(booking.booking_date)} icon={CalendarDays} />
+                <InfoRow label="WINDOW" value={`${formatTime(booking.start_time)}${booking.end_time ? ` - ${formatTime(booking.end_time)}` : ''}`} icon={Clock3} />
+                <InfoRow label="LOC_COORDINATES" value={locationText} icon={MapPin} />
+                <InfoRow label="LOC_TYPE" value={booking.location_type || '—'} icon={MapPin} />
+                <InfoRow label="TARGET_VEHICLE" value={vehicleText} icon={Car} />
+                <InfoRow label="HULL_COATING" value={booking.vehicle_color || '—'} icon={Car} />
+              </div>
             </div>
+          )}
 
-            <div className="mt-12 pt-10 border-t border-white/5">
-              <p className="text-[8px] font-black uppercase tracking-[0.3em] mb-4 text-text-secondary">OBSERVATIONS</p>
+          {/* Tab Content: Notes */}
+          {activeTab === 'notes' && (
+            <div className="glass-panel p-8 relative overflow-hidden animate-fade-in space-y-4">
+              <div className="absolute top-0 left-0 w-1 h-full bg-white opacity-20" />
+              <p className="text-[8px] font-black uppercase tracking-[0.3em] text-text-secondary">OBSERVATIONS</p>
               <div className="rounded-xl p-6 bg-white/[0.02] border border-white/5">
                 <p className="text-[11px] font-bold tracking-widest text-white leading-relaxed uppercase">
                   {booking.notes || 'No entity notes recorded.'}
                 </p>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
-        <div className="lg:col-span-4 space-y-10">
+        {/* Right column containing status options */}
+        <div className="lg:col-span-4 space-y-6">
           {/* Status Control */}
           <div className="glass-panel p-8 relative overflow-hidden bg-black/40">
             <div className="absolute top-0 left-0 w-1 h-full bg-cyber-pink opacity-50" />
@@ -235,7 +269,7 @@ const BookingDetail = () => {
                     key={nextStatus}
                     onClick={() => updateStatus(nextStatus)}
                     disabled={updating || active}
-                    className={`w-full group flex items-center justify-between px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border outline-none
+                    className={`w-full group flex items-center justify-between px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border outline-none cursor-pointer
                       ${active ? 'bg-cyber-pink/20 border-cyber-pink/40 text-cyber-pink' : 
                         isDanger ? 'bg-red-500/5 border-red-500/10 text-red-400 hover:bg-red-500/10 hover:border-red-500/20' :
                         isSuccess ? 'bg-green-500/5 border-green-500/10 text-green-400 hover:bg-green-500/10 hover:border-green-500/20' :
@@ -269,13 +303,13 @@ const InfoRow = ({ label, value, icon: Icon, color = 'white' }) => {
   };
 
   return (
-    <div className="group/item">
-      <p className="text-[8px] font-black text-text-secondary uppercase tracking-[0.2em] mb-2">{label}</p>
-      <div className="flex items-center gap-4">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${colorMap[color] || colorMap.white} border border-transparent group-hover/item:border-current/20`}>
-          <Icon className="w-5 h-5" />
-        </div>
-        <p className="text-[10px] font-black text-white uppercase tracking-widest leading-tight">{value}</p>
+    <div className="group/item flex items-center gap-4">
+      <div className={`w-8 h-8 shrink-0 rounded-xl flex items-center justify-center transition-all ${colorMap[color] || colorMap.white} border border-transparent group-hover/item:border-current/20`}>
+        <Icon className="w-4 h-4" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[8px] font-black text-text-secondary uppercase tracking-[0.2em] mb-0.5 truncate">{label}</p>
+        <p className="text-[10px] font-black text-white uppercase tracking-widest leading-tight truncate">{value}</p>
       </div>
     </div>
   );

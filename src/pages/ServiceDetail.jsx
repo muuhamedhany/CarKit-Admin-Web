@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ChevronLeft, Loader2, Wrench, Tag, Store, Clock, Hash, MapPin, Check, X, Shield, Activity } from 'lucide-react';
+import { ChevronLeft, Wrench, Tag, Store, Clock, Hash, MapPin, Check, X, Shield, Activity } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -15,6 +15,7 @@ const ServiceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
+  const [activeTab, setActiveTab] = useState('gallery');
 
   useEffect(() => {
     fetchServiceDetails();
@@ -112,10 +113,11 @@ const ServiceDetail = () => {
   }[service.location_type] || service.location_type || '—';
 
   return (
-    <div className="max-w-6xl mx-auto space-y-10 animate-fade-in pb-20">
+    <>
+      <div className="max-w-6xl mx-auto space-y-6 animate-fade-in pb-20">
       {/* Navigation & Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-        <div className="space-y-6">
+        <div className="space-y-4">
           <button
             onClick={() => navigate('/pending-services')}
             className="group inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-text-secondary hover:text-white transition-all"
@@ -131,7 +133,7 @@ const ServiceDetail = () => {
             </div>
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-5xl font-black text-white tracking-tighter display-font leading-none uppercase">
+                <h1 className="text-4xl font-black text-white tracking-tighter display-font leading-none uppercase">
                   {service.name}
                 </h1>
               </div>
@@ -163,13 +165,48 @@ const ServiceDetail = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          {/* Visual Array */}
-          {serviceImages.length > 0 && (
-            <div className="glass-panel p-8 relative overflow-hidden border-white/5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column with Tabs */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Tab Selector */}
+          <div className="flex border-b border-white/5 overflow-x-auto custom-scrollbar gap-2">
+            <button
+              onClick={() => setActiveTab('gallery')}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
+                activeTab === 'gallery'
+                  ? 'text-cyber-blue border-cyber-blue'
+                  : 'text-text-secondary hover:text-white border-transparent'
+              }`}
+            >
+              Optical Gallery
+            </button>
+            <button
+              onClick={() => setActiveTab('narrative')}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
+                activeTab === 'narrative'
+                  ? 'text-cyber-blue border-cyber-blue'
+                  : 'text-text-secondary hover:text-white border-transparent'
+              }`}
+            >
+              Description
+            </button>
+            <button
+              onClick={() => setActiveTab('windows')}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
+                activeTab === 'windows'
+                  ? 'text-cyber-blue border-cyber-blue'
+                  : 'text-text-secondary hover:text-white border-transparent'
+              }`}
+            >
+              Operational Windows
+            </button>
+          </div>
+
+          {/* Tab Content: Gallery */}
+          {activeTab === 'gallery' && (
+            <div className="glass-panel p-8 relative overflow-hidden border-white/5 animate-fade-in">
               <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30 shadow-[0_0_15px_rgba(0,242,255,0.5)]" />
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-6">
                 <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font flex items-center gap-3">
                   <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" /> 
                   Optical Proofing
@@ -178,64 +215,79 @@ const ServiceDetail = () => {
                   {serviceImages.length} Nodes Detected
                 </div>
               </div>
-              <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar">
-                {serviceImages.map((src, idx) => (
-                  <div key={idx} className="relative group shrink-0">
-                    <div className="absolute inset-0 bg-cyber-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl z-10" />
-                    <img 
-                      src={src} 
-                      alt={`${service.name} view ${idx + 1}`} 
-                      className="w-72 h-72 object-cover rounded-2xl border border-white/10 group-hover:border-cyber-blue/50 transition-all duration-500 shadow-2xl" 
-                    />
-                  </div>
-                ))}
+              {serviceImages.length > 0 ? (
+                <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar">
+                  {serviceImages.map((src, idx) => (
+                    <div key={idx} className="relative group shrink-0">
+                      <div className="absolute inset-0 bg-cyber-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl z-10" />
+                      <img 
+                        src={src} 
+                        alt={`${service.name} view ${idx + 1}`} 
+                        className="w-64 h-64 object-cover rounded-2xl border border-white/10 group-hover:border-cyber-blue/50 transition-all duration-500 shadow-2xl" 
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="w-full h-64 rounded-2xl flex flex-col items-center justify-center bg-black/40 border border-white/5">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">No Optical Payloads Uploaded</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Tab Content: Description */}
+          {activeTab === 'narrative' && (
+            <div className="glass-panel p-8 relative overflow-hidden border-white/5 animate-fade-in">
+              <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-30 shadow-[0_0_15px_rgba(179,136,255,0.5)]" />
+              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-6 flex items-center gap-3">
+                <div className="w-2 h-2 bg-cyber-purple rounded-full shadow-[0_0_10px_rgba(179,136,255,0.8)]" /> 
+                Service Narrative
+              </h2>
+              <div className="bg-black/40 rounded-2xl p-6 border border-white/5">
+                <p className="text-sm font-medium leading-relaxed text-text-secondary whitespace-pre-wrap">
+                  {service.description || 'No descriptive payload detected for this service unit.'}
+                </p>
               </div>
             </div>
           )}
 
-          {/* Description Node */}
-          <div className="glass-panel p-10 relative overflow-hidden border-white/5">
-            <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-30 shadow-[0_0_15px_rgba(179,136,255,0.5)]" />
-            <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-3">
-              <div className="w-2 h-2 bg-cyber-purple rounded-full shadow-[0_0_10px_rgba(179,136,255,0.8)]" /> 
-              Service Narrative
-            </h2>
-            <div className="relative">
-              <p className="text-base font-medium leading-relaxed text-text-secondary whitespace-pre-wrap">
-                {service.description || 'No descriptive payload detected for this service unit.'}
-              </p>
-            </div>
-          </div>
-
-          {/* Timeline Access */}
-          {service.available_times && service.available_times.length > 0 && (
-            <div className="glass-panel p-10 relative overflow-hidden border-white/5">
-               <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30 shadow-[0_0_15px_rgba(0,242,255,0.5)]" />
-               <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-3">
-                 <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" /> 
-                 Operational Windows
-               </h2>
-               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                 {service.available_times.map((t, i) => (
-                   <div
-                     key={i}
-                     className="px-4 py-3 rounded-xl bg-black border border-white/5 text-[10px] font-black text-center text-cyber-blue uppercase tracking-widest hover:border-cyber-blue/40 transition-all cursor-default"
-                   >
-                     {t}
-                   </div>
-                 ))}
-               </div>
+          {/* Tab Content: Windows */}
+          {activeTab === 'windows' && (
+            <div className="glass-panel p-8 relative overflow-hidden border-white/5 animate-fade-in">
+              <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30 shadow-[0_0_15px_rgba(0,242,255,0.5)]" />
+              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-6 flex items-center gap-3">
+                <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" /> 
+                Operational Windows
+              </h2>
+              {service.available_times && service.available_times.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                  {service.available_times.map((t, i) => (
+                    <div
+                      key={i}
+                      className="px-4 py-3 rounded-xl bg-black border border-white/5 text-[10px] font-black text-center text-cyber-blue uppercase tracking-widest hover:border-cyber-blue/40 transition-all cursor-default"
+                    >
+                      {t}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-white/5 bg-black/40 p-6 text-center">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">No Operational Windows Configured</p>
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        <div className="space-y-8">
+        {/* Right Column */}
+        <div className="lg:col-span-4 space-y-6">
           {/* Metadata Controller */}
           <div className="glass-panel p-8 relative overflow-hidden border-white/5">
             <div className="absolute top-0 left-0 w-1 h-full bg-cyber-pink opacity-30 shadow-[0_0_15px_rgba(255,0,128,0.5)]" />
-            <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-10">Diagnostic Metrics</h2>
+            <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-8">Diagnostic Metrics</h2>
             
-            <div className="space-y-8">
+            <div className="space-y-6">
               <InfoRow label="Protocol Cost" value={`${Number(service.price).toLocaleString()} EGP`} icon={Tag} accent="var(--cyber-pink)" />
               <InfoRow label="Execution Time" value={`${service.duration ?? 0} Minutes`} icon={Clock} accent="var(--cyber-blue)" />
               <InfoRow label="Service Source" value={service.provider_name || 'Anonymous'} icon={Store} accent="var(--cyber-purple)" />
@@ -246,51 +298,56 @@ const ServiceDetail = () => {
               )}
             </div>
           </div>
+          
+        </div>
+      </div>
+      </div>
 
-          {/* Decision Center */}
-          {isPending && (
-            <div className="glass-panel p-10 relative overflow-hidden border-cyber-pink/20 bg-cyber-pink/[0.02]">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber-pink to-transparent opacity-40 shadow-[0_0_20px_rgba(255,0,128,0.5)]" />
-              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-8 text-center">Executive Override</h2>
-              <div className="space-y-4">
-                <button
-                  onClick={handleApprove}
-                  disabled={actionLoading !== null}
-                  className="cyber-button w-full flex items-center justify-center gap-3 px-8 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20 hover:border-green-500 transition-all active:scale-95 group"
-                >
-                  <Check className="w-5 h-5 group-hover:scale-125 transition-transform" />
-                  {actionLoading === 'approving' ? 'Authorizing...' : 'Authorize Service'}
-                </button>
+      {/* Floating Executive Override */}
+      {isPending && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg px-4">
+          <div className="animate-fade-in">
+            <div className="glass-panel p-4 bg-black/80 border-cyber-pink/30 flex items-center justify-between gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.8)] neo-border-pink">
+              <div className="hidden sm:block text-left pl-2">
+                <p className="text-[8px] font-black text-text-secondary uppercase tracking-[0.2em]">Service Status</p>
+                <p className="text-xs font-black text-white uppercase tracking-widest">Pending Review</p>
+              </div>
+              <div className="flex flex-1 sm:flex-initial gap-3">
                 <button
                   onClick={handleReject}
                   disabled={actionLoading !== null}
-                  className="cyber-button w-full flex items-center justify-center gap-3 px-8 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] bg-cyber-pink/5 border-cyber-pink/20 text-cyber-pink hover:bg-cyber-pink/10 hover:border-cyber-pink transition-all active:scale-95 group"
+                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] bg-cyber-pink/5 border-cyber-pink/20 text-cyber-pink hover:bg-cyber-pink/10 hover:border-cyber-pink transition-all active:scale-95 group cursor-pointer"
                 >
-                  <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                  <X className="w-4 h-4 group-hover:rotate-90 transition-transform" />
                   {actionLoading === 'rejecting' ? 'Purging...' : 'Decommission'}
                 </button>
+                <button
+                  onClick={handleApprove}
+                  disabled={actionLoading !== null}
+                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 hover:border-green-500/50 transition-all active:scale-95 group cursor-pointer"
+                >
+                  <Check className="w-4 h-4 group-hover:scale-125 transition-transform" />
+                  {actionLoading === 'approving' ? 'Authorizing...' : 'Authorize'}
+                </button>
               </div>
-              <p className="text-[9px] font-bold text-text-secondary/40 text-center uppercase tracking-[0.2em] mt-8">
-                Warning: Decision is immutable once committed to main chain.
-              </p>
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 
 const InfoRow = ({ label, value, icon: Icon, accent }) => (
-  <div className="group/row flex items-center gap-5">
-    <div className="w-12 h-12 rounded-2xl bg-black border border-white/5 flex items-center justify-center transition-all group-hover/row:border-current group-hover/row:scale-110 duration-500" style={{ color: accent }}>
-      <Icon className="w-6 h-6 opacity-30 group-hover/row:opacity-100 transition-opacity" />
+  <div className="group/row flex items-center gap-4">
+    <div className="w-9 h-9 shrink-0 rounded-xl bg-black border border-white/5 flex items-center justify-center transition-all group-hover/row:border-current group-hover/row:scale-110 duration-500" style={{ color: accent }}>
+      <Icon className="w-4.5 h-4.5 opacity-30 group-hover/row:opacity-100 transition-opacity" />
     </div>
-    <div className="space-y-1">
-      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-text-secondary group-hover/row:text-white transition-colors">
+    <div className="min-w-0">
+      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-text-secondary group-hover/row:text-white transition-colors truncate">
         {label}
       </p>
-      <p className="text-sm font-bold text-white tracking-wide">
+      <p className="text-sm font-bold text-white tracking-wide truncate">
         {value}
       </p>
     </div>

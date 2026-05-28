@@ -14,9 +14,22 @@ export const AuthProvider = ({ children }) => {
     // Check localStorage for existing session
     const storedToken = localStorage.getItem('carkit_admin_token');
     const storedAdmin = localStorage.getItem('carkit_admin');
+    const lastActive = localStorage.getItem('carkit_admin_last_active');
+    
+    const maxInactivity = 30 * 60 * 1000; // 30 minutes
+    const now = Date.now();
+
     if (storedToken && storedAdmin) {
-      setToken(storedToken);
-      setAdmin(JSON.parse(storedAdmin));
+      if (lastActive && now - parseInt(lastActive, 10) > maxInactivity) {
+        // Expired
+        localStorage.removeItem('carkit_admin_token');
+        localStorage.removeItem('carkit_admin');
+        localStorage.removeItem('carkit_admin_last_active');
+      } else {
+        setToken(storedToken);
+        setAdmin(JSON.parse(storedAdmin));
+        localStorage.setItem('carkit_admin_last_active', now.toString());
+      }
     }
     setLoading(false);
   }, []);
@@ -34,6 +47,7 @@ export const AuthProvider = ({ children }) => {
         setToken(authToken);
         localStorage.setItem('carkit_admin_token', authToken);
         localStorage.setItem('carkit_admin', JSON.stringify(adminData));
+        localStorage.setItem('carkit_admin_last_active', Date.now().toString());
         return { success: true };
       } else {
         return { success: false, message: res.data.message };
@@ -50,7 +64,39 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('carkit_admin_token');
     localStorage.removeItem('carkit_admin');
+    localStorage.removeItem('carkit_admin_last_active');
   };
+
+  useEffect(() => {
+    if (!token) return;
+
+    const maxInactivity = 30 * 60 * 1000; // 30 minutes
+
+    const updateActivity = () => {
+      localStorage.setItem('carkit_admin_last_active', Date.now().toString());
+    };
+
+    // Listen to user interactions
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+    events.forEach(event => {
+      window.addEventListener(event, updateActivity);
+    });
+
+    // Check every 10 seconds for idle timeout
+    const interval = setInterval(() => {
+      const lastActive = localStorage.getItem('carkit_admin_last_active');
+      if (lastActive && Date.now() - parseInt(lastActive, 10) > maxInactivity) {
+        logout();
+      }
+    }, 10000);
+
+    return () => {
+      events.forEach(event => {
+        window.removeEventListener(event, updateActivity);
+      });
+      clearInterval(interval);
+    };
+  }, [token]);
 
   return (
     <AuthContext.Provider

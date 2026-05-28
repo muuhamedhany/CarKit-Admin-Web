@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowLeft, FileText, Eye, CheckCircle, XCircle, Loader2, Store, Shield, Activity, Fingerprint } from 'lucide-react';
+import { ArrowLeft, FileText, Eye, CheckCircle, XCircle, Store, Shield, Fingerprint } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,6 +13,7 @@ const VendorDetail = () => {
   const [vendor, setVendor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
 
   const fetchVendor = async () => {
     try {
@@ -102,10 +103,11 @@ const VendorDetail = () => {
   ].filter(d => d.url);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-10 animate-fade-in pb-20">
+    <>
+      <div className="max-w-6xl mx-auto space-y-6 animate-fade-in pb-20">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-        <div className="space-y-6">
+        <div className="space-y-4">
           <button
             onClick={() => navigate('/vendors')}
             className="group inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-text-secondary hover:text-white transition-all"
@@ -121,7 +123,7 @@ const VendorDetail = () => {
             </div>
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-5xl font-black text-white tracking-tighter display-font leading-none uppercase">
+                <h1 className="text-4xl font-black text-white tracking-tighter display-font leading-none uppercase">
                   {vendor.name}
                 </h1>
               </div>
@@ -152,111 +154,147 @@ const VendorDetail = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Vendor Information */}
-        <div className="glass-panel p-10 relative overflow-hidden border-white/5">
-          <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30 shadow-[0_0_15px_rgba(0,242,255,0.5)]" />
-          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-10 flex items-center gap-3">
-            <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" />
-            Entity Profile
-          </h2>
-          <div className="space-y-8">
-            <InfoRow label="Legal Name" value={vendor.name} accent="var(--cyber-blue)" />
-            <InfoRow label="Communication Channel" value={vendor.contact_info || 'Protocol Offline'} accent="var(--cyber-purple)" />
-            <InfoRow label="System ID" value={`#${vendor.vendor_id}`} accent="var(--cyber-pink)" />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column with Tabs */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Tab Selector */}
+          <div className="flex border-b border-white/5 overflow-x-auto custom-scrollbar gap-2">
+            <button
+              onClick={() => setActiveTab('profile')}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
+                activeTab === 'profile'
+                  ? 'text-cyber-blue border-cyber-blue'
+                  : 'text-text-secondary hover:text-white border-transparent'
+              }`}
+            >
+              Entity Profile
+            </button>
+            <button
+              onClick={() => setActiveTab('docs')}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
+                activeTab === 'docs'
+                  ? 'text-cyber-blue border-cyber-blue'
+                  : 'text-text-secondary hover:text-white border-transparent'
+              }`}
+            >
+              Verification Documents
+            </button>
+          </div>
+
+          {/* Tab Content: Profile */}
+          {activeTab === 'profile' && (
+            <div className="glass-panel p-8 relative overflow-hidden border-white/5 animate-fade-in space-y-8">
+              <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30 shadow-[0_0_15px_rgba(0,242,255,0.5)]" />
+              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font flex items-center gap-3">
+                <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" />
+                Entity Profile
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <InfoRow label="Legal Name" value={vendor.name} accent="var(--cyber-blue)" />
+                <InfoRow label="Communication Channel" value={vendor.contact_info || 'Protocol Offline'} accent="var(--cyber-purple)" />
+                <InfoRow label="System ID" value={`#${vendor.vendor_id}`} accent="var(--cyber-pink)" />
+              </div>
+            </div>
+          )}
+
+          {/* Tab Content: Documents */}
+          {activeTab === 'docs' && (
+            <div className="glass-panel p-8 relative overflow-hidden border-white/5 animate-fade-in space-y-8">
+              <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-30 shadow-[0_0_15px_rgba(179,136,255,0.5)]" />
+              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font flex items-center gap-3">
+                <div className="w-2 h-2 bg-cyber-purple rounded-full shadow-[0_0_10px_rgba(179,136,255,0.8)]" />
+                Verification Documents
+              </h2>
+              {documents.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+                  <div className="p-5 rounded-3xl bg-white/[0.02] border border-white/5">
+                    <FileText className="w-10 h-10 text-white/10" />
+                  </div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">No document payloads detected</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {documents.map((doc, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between rounded-2xl p-5 bg-black/40 border border-white/5 hover:border-cyber-purple/40 transition-all group"
+                    >
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="w-12 h-12 rounded-xl bg-cyber-purple/5 border border-cyber-purple/10 flex items-center justify-center group-hover:bg-cyber-purple/10 transition-colors shrink-0">
+                          <FileText className="w-6 h-6 text-cyber-purple" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-black text-white uppercase tracking-wider">{doc.label}</p>
+                          <p className="text-[9px] font-bold text-text-secondary mt-1 font-mono uppercase truncate max-w-[150px]">{getDocName(doc.url)}</p>
+                        </div>
+                      </div>
+                      <a
+                        href={getDocUrl(doc.url)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="cyber-button px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-cyber-purple/10 border-cyber-purple/20 text-cyber-purple hover:bg-cyber-purple/20 hover:border-cyber-purple transition-all flex items-center gap-2 cursor-pointer shrink-0"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> View
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Right Column */}
+        <div className="lg:col-span-4 space-y-6">
+        </div>
+      </div>
+      </div>
+
+      {/* Floating Verification Protocol */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg px-4">
+        <div className="animate-fade-in">
+          <div className="glass-panel p-4 bg-black/80 border-cyber-purple/30 flex items-center justify-between gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.8)] neo-border-purple">
+            <div className="hidden sm:block text-left pl-2">
+              <p className="text-[8px] font-black text-text-secondary uppercase tracking-[0.2em]">Verification Protocol</p>
+              <p className="text-xs font-black text-white uppercase tracking-widest">{status}</p>
+            </div>
+            <div className="flex flex-1 sm:flex-initial gap-3 justify-end">
+              {status !== 'rejected' && (
+                <button
+                  onClick={() => updateStatus('rejected')}
+                  disabled={updating}
+                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] bg-cyber-pink/5 border-cyber-pink/20 text-cyber-pink hover:bg-cyber-pink/10 hover:border-cyber-pink transition-all active:scale-95 group cursor-pointer"
+                >
+                  <XCircle className="w-4 h-4 group-hover:rotate-90 transition-transform" />
+                  {updating ? 'Processing...' : 'Decommission'}
+                </button>
+              )}
+              {status !== 'approved' && (
+                <button
+                  onClick={() => updateStatus('approved')}
+                  disabled={updating}
+                  className="cyber-button flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20 hover:border-green-500 transition-all flex items-center gap-2 active:scale-95 group cursor-pointer"
+                >
+                  <CheckCircle className="w-5 h-5 group-hover:scale-125 transition-transform" />
+                  {updating ? 'Processing...' : 'Authorize'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
-
-        {/* Submitted Documents */}
-        <div className="glass-panel p-10 relative overflow-hidden border-white/5">
-          <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-30 shadow-[0_0_15px_rgba(179,136,255,0.5)]" />
-          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-10 flex items-center gap-3">
-            <div className="w-2 h-2 bg-cyber-purple rounded-full shadow-[0_0_10px_rgba(179,136,255,0.8)]" />
-            Verification Documents
-          </h2>
-          {documents.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
-              <div className="p-5 rounded-3xl bg-white/[0.02] border border-white/5">
-                <FileText className="w-10 h-10 text-white/10" />
-              </div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">No document payloads detected</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {documents.map((doc, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between rounded-2xl p-5 bg-black/40 border border-white/5 hover:border-cyber-purple/40 transition-all group"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-cyber-purple/5 border border-cyber-purple/10 flex items-center justify-center group-hover:bg-cyber-purple/10 transition-colors">
-                      <FileText className="w-6 h-6 text-cyber-purple" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-black text-white uppercase tracking-wider">{doc.label}</p>
-                      <p className="text-[9px] font-bold text-text-secondary mt-1 font-mono uppercase truncate max-w-[150px]">{getDocName(doc.url)}</p>
-                    </div>
-                  </div>
-                  <a
-                    href={getDocUrl(doc.url)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="cyber-button px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-cyber-purple/10 border-cyber-purple/20 text-cyber-purple hover:bg-cyber-purple/20 hover:border-cyber-purple transition-all flex items-center gap-2"
-                  >
-                    <Eye className="w-3.5 h-3.5" /> View
-                  </a>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
-
-      {/* Final Action Hub */}
-      <div className="glass-panel p-10 relative overflow-hidden border-white/5">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber-blue to-transparent opacity-30 shadow-[0_0_20px_rgba(0,242,255,0.3)]" />
-        <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-3">
-          <div className="w-2 h-2 bg-cyber-blue rounded-full shadow-[0_0_10px_rgba(0,242,255,0.8)]" />
-          Verification Protocol
-        </h2>
-        <div className="flex flex-wrap gap-4">
-          {status !== 'approved' && (
-            <button
-              onClick={() => updateStatus('approved')}
-              disabled={updating}
-              className="cyber-button px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20 hover:border-green-500 transition-all flex items-center gap-3 active:scale-95 group"
-            >
-              <CheckCircle className="w-5 h-5 group-hover:scale-125 transition-transform" />
-              {updating ? 'Processing...' : 'Authorize Vendor'}
-            </button>
-          )}
-          {status !== 'rejected' && (
-            <button
-              onClick={() => updateStatus('rejected')}
-              disabled={updating}
-              className="cyber-button px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] bg-cyber-pink/5 border-cyber-pink/20 text-cyber-pink hover:bg-cyber-pink/10 hover:border-cyber-pink transition-all flex items-center gap-3 active:scale-95 group"
-            >
-              <XCircle className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-              {updating ? 'Processing...' : 'Decommission Entity'}
-            </button>
-          )}
-        </div>
-        <p className="text-[9px] font-bold text-text-secondary/40 uppercase tracking-[0.2em] mt-8">
-          Authorized personal only. All verification protocols are logged in the secure audit chain.
-        </p>
-      </div>
-    </div>
+    </>
   );
 };
 
 const InfoRow = ({ label, value, accent }) => (
-  <div className="group/row">
-    <p className="text-[9px] font-black uppercase tracking-[0.3em] mb-2 text-text-secondary group-hover/row:text-white transition-colors">{label}</p>
-    <div className="flex items-center gap-4">
-      <div className="w-1.5 h-10 rounded-full bg-white/5 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1/2 bg-current opacity-40 group-hover/row:h-full transition-all duration-500" style={{ color: accent }} />
-      </div>
-      <p className="text-sm font-bold text-white tracking-wide">{value}</p>
+  <div className="group/row flex items-center gap-4">
+    <div className="w-1.5 h-10 rounded-full bg-white/5 relative overflow-hidden shrink-0">
+      <div className="absolute top-0 left-0 w-full h-1/2 bg-current opacity-40 group-hover/row:h-full transition-all duration-500" style={{ color: accent }} />
+    </div>
+    <div className="min-w-0">
+      <p className="text-[9px] font-black uppercase tracking-[0.3em] mb-0.5 text-text-secondary group-hover/row:text-white transition-colors truncate">{label}</p>
+      <p className="text-sm font-bold text-white tracking-wide truncate">{value}</p>
     </div>
   </div>
 );

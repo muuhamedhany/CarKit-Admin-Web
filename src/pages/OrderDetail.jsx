@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowLeft, CheckCircle2, CircleDashed, Clock3, Loader2, Mail, MapPin, Package, ShoppingBag, Truck, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, CircleDashed, Clock3, Mail, MapPin, Package, ShoppingBag, Truck, XCircle } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const STATUS_OPTIONS = ['pending', 'processing', 'ready_for_pickup', 'in_transit', 'delivered', 'cancelled', 'return_requested', 'returned'];
@@ -34,6 +34,7 @@ const OrderDetail = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [activeTab, setActiveTab] = useState('payload');
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -124,9 +125,9 @@ const OrderDetail = () => {
   const lineTotal = items.reduce((sum, item) => sum + Number(item.quantity || 0) * Number(item.price_each || 0), 0);
 
   return (
-    <div className="space-y-10 animate-fade-in max-w-6xl mx-auto">
+    <div className="space-y-6 animate-fade-in max-w-6xl mx-auto pb-20">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 animate-fade-in">
         <div className="space-y-4">
           <button
             onClick={() => navigate('/orders')}
@@ -162,115 +163,149 @@ const OrderDetail = () => {
         </div>
       </div>
 
-      {/* Grid: Info Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="glass-panel p-8 relative overflow-hidden group">
-          <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30" />
-          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-2">
-            <div className="w-1.5 h-1.5 bg-cyber-blue rounded-full" /> Operative Identity
-          </h2>
-          <div className="space-y-6">
-            <InfoRow label="Protocol Name" value={order.customer_name || '—'} icon={ShoppingBag} accent="var(--accent-blue)" />
-            <InfoRow label="Secure Email" value={order.customer_email || '—'} icon={Mail} accent="var(--accent-blue)" />
-            <InfoRow label="Transmission Date" value={formatDateTime(order.order_date)} icon={Clock3} accent="var(--accent-blue)" />
-          </div>
-        </div>
-
-        <div className="glass-panel p-8 relative overflow-hidden group">
-          <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-30" />
-          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-2">
-            <div className="w-1.5 h-1.5 bg-cyber-purple rounded-full" /> Logistic Manifest
-          </h2>
-          <div className="space-y-6">
-            <InfoRow label="Deployment Point" value={shippingAddress} icon={MapPin} accent="var(--accent-purple)" />
-            <InfoRow label="Preferred Window" value={formatDate(order.preferred_delivery_date)} icon={Truck} accent="var(--accent-purple)" />
-            <InfoRow label="ETA Horizon" value={order.estimated_delivery_start || order.estimated_delivery_end ? `${formatDate(order.estimated_delivery_start)} - ${formatDate(order.estimated_delivery_end)}` : 'ANALYZING...'} icon={Clock3} accent="var(--accent-purple)" />
-          </div>
-        </div>
-      </div>
-
-      {/* Grid: Items & Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 glass-panel p-8">
-          <div className="flex items-center justify-between gap-4 mb-8">
-            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font">Payload Composition</h2>
-            <span className="text-[10px] font-black text-cyber-blue px-2 py-0.5 rounded bg-cyber-blue/10 border border-cyber-blue/20">
-              {itemCount} UNITS
-            </span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column with Tabs */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Tab Selector */}
+          <div className="flex border-b border-white/5 overflow-x-auto custom-scrollbar gap-2">
+            <button
+              onClick={() => setActiveTab('payload')}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
+                activeTab === 'payload'
+                  ? 'text-cyber-blue border-cyber-blue'
+                  : 'text-text-secondary hover:text-white border-transparent'
+              }`}
+            >
+              Payload Composition
+            </button>
+            <button
+              onClick={() => setActiveTab('logistics')}
+              className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap outline-none border-b-2 ${
+                activeTab === 'logistics'
+                  ? 'text-cyber-blue border-cyber-blue'
+                  : 'text-text-secondary hover:text-white border-transparent'
+              }`}
+            >
+              Customer & Logistics
+            </button>
           </div>
 
-          <div className="space-y-4">
-            {items.length === 0 ? (
-              <div className="rounded-2xl p-12 text-center bg-black/40 border border-white/5">
-                <Package className="w-12 h-12 mx-auto mb-4 text-white/5" />
-                <p className="text-xs font-bold uppercase tracking-widest text-text-secondary">No payload detected</p>
+          {/* Tab Content: Payload */}
+          {activeTab === 'payload' && (
+            <div className="glass-panel p-8 animate-fade-in space-y-6">
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font">Payload Composition</h2>
+                <span className="text-[10px] font-black text-cyber-blue px-2 py-0.5 rounded bg-cyber-blue/10 border border-cyber-blue/20">
+                  {itemCount} UNITS
+                </span>
               </div>
-            ) : (
-              items.map((item) => (
-                <div key={item.order_item_id} className="group relative overflow-hidden rounded-2xl p-6 bg-black/40 border border-white/5 hover:border-white/20 transition-all">
-                  <div className="flex items-center justify-between gap-6 relative z-10">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-white/20 group-hover:text-cyber-blue transition-colors">
-                        <Package size={20} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-white group-hover:text-cyber-blue transition-colors">{item.product_name || `Product #${item.product_id}`}</p>
-                        <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mt-1">Quantity: {item.quantity}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-black text-white display-font">{Number(item.price_each || 0).toLocaleString('en-EG')} EGP</p>
-                      <p className="text-[10px] font-bold text-cyber-pink uppercase tracking-widest mt-1">Line: {(Number(item.quantity || 0) * Number(item.price_each || 0)).toLocaleString('en-EG')} EGP</p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
 
-          <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary italic">Audit Computed Total</span>
-            <span className="text-lg font-black text-white display-font">{lineTotal.toLocaleString('en-EG')} EGP</span>
-          </div>
+              <div className="space-y-4">
+                {items.length === 0 ? (
+                  <div className="rounded-2xl p-12 text-center bg-black/40 border border-white/5">
+                    <Package className="w-12 h-12 mx-auto mb-4 text-white/5" />
+                    <p className="text-xs font-bold uppercase tracking-widest text-text-secondary">No payload detected</p>
+                  </div>
+                ) : (
+                  items.map((item) => (
+                    <div key={item.order_item_id} className="group relative overflow-hidden rounded-2xl p-6 bg-black/40 border border-white/5 hover:border-white/20 transition-all">
+                      <div className="flex items-center justify-between gap-6 relative z-10">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-white/20 group-hover:text-cyber-blue transition-colors">
+                            <Package size={20} />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-white group-hover:text-cyber-blue transition-colors">{item.product_name || `Product #${item.product_id}`}</p>
+                            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mt-1">Quantity: {item.quantity}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-black text-white display-font">{Number(item.price_each || 0).toLocaleString('en-EG')} EGP</p>
+                          <p className="text-[10px] font-bold text-cyber-pink uppercase tracking-widest mt-1">Line: {(Number(item.quantity || 0) * Number(item.price_each || 0)).toLocaleString('en-EG')} EGP</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="pt-6 border-t border-white/5 flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary italic">Audit Computed Total</span>
+                <span className="text-lg font-black text-white display-font">{lineTotal.toLocaleString('en-EG')} EGP</span>
+              </div>
+            </div>
+          )}
+
+          {/* Tab Content: Logistics */}
+          {activeTab === 'logistics' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+              <div className="glass-panel p-8 relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-1 h-full bg-cyber-blue opacity-30" />
+                <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-cyber-blue rounded-full" /> Operative Identity
+                </h2>
+                <div className="space-y-6">
+                  <InfoRow label="Protocol Name" value={order.customer_name || '—'} icon={ShoppingBag} accent="var(--accent-blue)" />
+                  <InfoRow label="Secure Email" value={order.customer_email || '—'} icon={Mail} accent="var(--accent-blue)" />
+                  <InfoRow label="Transmission Date" value={formatDateTime(order.order_date)} icon={Clock3} accent="var(--accent-blue)" />
+                </div>
+              </div>
+
+              <div className="glass-panel p-8 relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-1 h-full bg-cyber-purple opacity-30" />
+                <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font mb-8 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-cyber-purple rounded-full" /> Logistic Manifest
+                </h2>
+                <div className="space-y-6">
+                  <InfoRow label="Deployment Point" value={shippingAddress} icon={MapPin} accent="var(--accent-purple)" />
+                  <InfoRow label="Preferred Window" value={formatDate(order.preferred_delivery_date)} icon={Truck} accent="var(--accent-purple)" />
+                  <InfoRow label="ETA Horizon" value={order.estimated_delivery_start || order.estimated_delivery_end ? `${formatDate(order.estimated_delivery_start)} - ${formatDate(order.estimated_delivery_end)}` : 'ANALYZING...'} icon={Clock3} accent="var(--accent-purple)" />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="glass-panel p-8">
-          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font mb-8">Override Status</h2>
-          <div className="space-y-3">
-            {STATUS_OPTIONS.map((nextStatus) => {
-              const active = nextStatus === status;
-              const isDanger = nextStatus === 'cancelled';
-              
-              return (
-                <button
-                  key={nextStatus}
-                  type="button"
-                  onClick={() => updateStatus(nextStatus)}
-                  disabled={updating || active}
-                  className={`cyber-button w-full flex items-center justify-between px-5 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
-                    active ? 'neo-border-pink bg-cyber-pink/10' : 'bg-white/5 border-white/5'
-                  } disabled:opacity-40`}
-                  style={{
-                    color: active ? 'white' : 'var(--text-secondary)',
-                  }}
-                >
-                  <span className="flex items-center gap-3">
-                    {nextStatus === 'cancelled' ? <XCircle className="w-4 h-4" /> : nextStatus === 'delivered' ? <CheckCircle2 className="w-4 h-4" /> : <CircleDashed className="w-4 h-4" />}
-                    {nextStatus}
-                  </span>
-                  {active ? (
-                    <span className="text-[8px] bg-white/10 px-1.5 py-0.5 rounded">ACTIVE</span>
-                  ) : (
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity">UPDATE</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-          <div className="mt-8 p-4 rounded-xl bg-black/40 border border-white/5">
-            <p className="text-[9px] font-medium leading-relaxed text-text-secondary uppercase tracking-tight italic">
-              Status overrides are logged to the persistent security ledger. Ensure manifest verification before deployment.
-            </p>
+        {/* Right Column */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="glass-panel p-8">
+            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white display-font mb-8">Override Status</h2>
+            <div className="space-y-3">
+              {STATUS_OPTIONS.map((nextStatus) => {
+                const active = nextStatus === status;
+                const isDanger = nextStatus === 'cancelled';
+                
+                return (
+                  <button
+                    key={nextStatus}
+                    type="button"
+                    onClick={() => updateStatus(nextStatus)}
+                    disabled={updating || active}
+                    className={`cyber-button w-full flex items-center justify-between px-5 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border cursor-pointer ${
+                      active ? 'neo-border-pink bg-cyber-pink/10' : 'bg-white/5 border-white/5'
+                    } disabled:opacity-40`}
+                    style={{
+                      color: active ? 'white' : 'var(--text-secondary)',
+                    }}
+                  >
+                    <span className="flex items-center gap-3">
+                      {nextStatus === 'cancelled' ? <XCircle className="w-4 h-4" /> : nextStatus === 'delivered' ? <CheckCircle2 className="w-4 h-4" /> : <CircleDashed className="w-4 h-4" />}
+                      {nextStatus}
+                    </span>
+                    {active ? (
+                      <span className="text-[8px] bg-white/10 px-1.5 py-0.5 rounded">ACTIVE</span>
+                    ) : (
+                      <span className="opacity-0 group-hover:opacity-100 transition-opacity">UPDATE</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="mt-8 p-4 rounded-xl bg-black/40 border border-white/5">
+              <p className="text-[9px] font-medium leading-relaxed text-text-secondary uppercase tracking-tight italic">
+                Status overrides are logged to the persistent security ledger. Ensure manifest verification before deployment.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -279,13 +314,13 @@ const OrderDetail = () => {
 };
 
 const InfoRow = ({ label, value, icon: Icon, accent }) => (
-  <div className="group/row">
-    <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-2 text-text-secondary group-hover/row:text-white transition-colors">{label}</p>
-    <div className="flex items-center gap-4">
-      <div className="w-10 h-10 rounded-xl bg-black border border-white/5 flex items-center justify-center transition-all group-hover/row:border-current" style={{ color: accent }}>
-        <Icon className="w-5 h-5 opacity-40 group-hover/row:opacity-100 transition-opacity" />
-      </div>
-      <p className="text-sm font-bold text-white/80 group-hover/row:text-white transition-colors">{value}</p>
+  <div className="group/row flex items-center gap-4">
+    <div className="w-9 h-9 shrink-0 rounded-2xl bg-black border border-white/5 flex items-center justify-center transition-all group-hover/row:border-current" style={{ color: accent }}>
+      <Icon className="w-4.5 h-4.5 opacity-40 group-hover/row:opacity-100 transition-opacity" />
+    </div>
+    <div className="min-w-0">
+      <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-0.5 text-text-secondary group-hover/row:text-white transition-colors truncate">{label}</p>
+      <p className="text-[11px] font-bold text-white/80 group-hover/row:text-white transition-colors break-words">{value}</p>
     </div>
   </div>
 );

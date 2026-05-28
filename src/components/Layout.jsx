@@ -4,11 +4,15 @@ import { LayoutDashboard, Store, Wrench, Menu, LogOut, PackageCheck, ShoppingBag
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../assets/carkit-logo.png';
+import { useTheme } from '../theme/ThemeContext';
+import splashIconBlack from '../assets/splash-icon-black.png';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { admin, logout } = useAuth();
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   const isSuperAdmin = admin?.role === 'superadmin';
 
@@ -49,7 +53,7 @@ const Layout = () => {
         <div className="flex h-20 shrink-0 items-center justify-between px-4 bg-black/20" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
           <div className="flex items-center gap-3">
             <div className="w-12 flex justify-center shrink-0">
-              <img src={logo} alt="CarKit" className="h-6 w-auto object-contain" />
+              <img src={isDark ? logo : splashIconBlack} alt="CarKit" className="h-6 w-auto object-contain" />
             </div>
             <div className="md:opacity-0 group-hover:opacity-100 transition-all duration-500 whitespace-nowrap overflow-hidden">
               <h1 className="text-sm font-bold tracking-widest uppercase text-white leading-tight">CarKit</h1>
@@ -143,7 +147,7 @@ const Layout = () => {
             <Menu className="h-5 w-5" aria-hidden="true" />
           </button>
           <div className="flex items-center gap-3 ml-4">
-            <img src={logo} alt="CarKit" className="h-6 w-auto" />
+            <img src={isDark ? logo : splashIconBlack} alt="CarKit" className="h-6 w-auto" />
             <span className="text-xs font-bold tracking-[0.2em] uppercase text-white">Admin Control</span>
           </div>
         </div>

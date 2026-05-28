@@ -3,10 +3,17 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2, Zap } from 'lucide-react';
 import logo from '../assets/carkit-logo.png';
+import ThemeToggle from '../components/ThemeToggle';
+import { useTheme } from '../theme/ThemeContext';
+import splashIconBlack from '../assets/splash-icon-black.png';
+
+
 
 const Login = () => {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -44,12 +51,16 @@ const Login = () => {
       <div className="login-bg-orb login-bg-orb-2" />
       <div className="login-bg-orb login-bg-orb-3" />
 
+      {/* Top right theme toggle */}
+      <div className="login-theme-toggle-wrapper">
+        <ThemeToggle />
+      </div>
+
       <div className="login-container">
         {/* Logo/Brand Section */}
         <div className="login-logo-wrapper">
-          <img src={logo} alt="CarKit" className="login-logo" />
+          <img src={isDark ? logo : splashIconBlack} alt="CarKit" className="login-logo" />
         </div>
-        <h1 className="login-title">CarKit</h1>
         <p className="login-subtitle">Admin Control Panel</p>
 
         <form onSubmit={handleSubmit} className="login-form">
